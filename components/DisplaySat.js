@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { VStack, Text, Center, Button, Flex } from '@chakra-ui/react';
+import { VStack, Text, Center, Button, Flex, Box } from '@chakra-ui/react';
 import dynamic from 'next/dynamic'
 
 
@@ -118,12 +118,15 @@ function DisplaySat() {
     }
 
     return (
-        <VStack display="absolute">
+        <VStack display="fix">
             {loaded &&
-                <Flex justify="center">
-                    <Button position="absolute" zIndex="popover" right="2" ml={2} colorScheme="blue" onClick={() => setFollow(!follow)}>{!follow ? 'Track' : 'Untrack'}</Button>
-                    <Map provider={osm} height="100vh" center={coord} defaultZoom={3} scrollWheelZoom={false}
+                <Flex display="fix" justify="center">
+                    <Button position="absolute" zIndex="popover" right="2" ml={2} colorScheme="blue" onClick={() => setFollow(!follow)}>{!follow ? 'Track' : 'Untrack'}</Button>                
+                    <Map provider={osm} height={window.innerHeight-130} borderRadius={50} center={coord} defaultZoom={3} scrollWheelZoom={false}
                         metaWheelZoom={true}
+                        style={{
+                            
+                        }}
                     >
                         <ZoomControl />
                         <Marker
@@ -132,20 +135,6 @@ function DisplaySat() {
                             anchor={coord}
                         />
                     </Map>
-
-                    {/* <Button position="absolute" zIndex="popover" right="2" ml={2} colorScheme="blue" onClick={() => setFollow(!follow)}>{!follow ? 'Track' : 'Untrack'}</Button>
-                    <MapContainer position="absolute" center={coord} zoom={(window.innerWidth > 1000 ? 3 : 2)} scrollWheelZoom={false}>
-                        <ChangeView center={coord} /> 
-                        <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-                        <Marker position={coord}>
-                            <Popup>
-                                {`${coord[0]}, ${coord[1]}`}
-                            </Popup>
-                        </Marker>
-                    </MapContainer> */}
                 </Flex>
             }
         </VStack>
