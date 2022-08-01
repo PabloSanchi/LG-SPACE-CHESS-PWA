@@ -33,7 +33,9 @@ function DisplaySat() {
 
     const tleLine1 = '1 51080U 22002DA  22200.13694574  .00008725  00000+0  44414-3 0  9996';
     const tleLine2 = '2 25544  51.6400 208.9163 0006317  69.9862  25.2906 15.54225995 67660';
-
+    const MAPTILER_ACCESS_TOKEN = 'SnjwKQpOHvLSvRXmRQ8Q';
+    const MAPID = 'streets'
+    
     useEffect(() => {
         // console.log('loading...');
         let coords = getLatLongFromTle();
@@ -117,16 +119,27 @@ function DisplaySat() {
         // if (follow) map.setView(center);
     }
 
+    
+    function mapTiler(x, y, z, dpr) {
+        return `https://api.maptiler.com/maps/${MAPID}/${z}/${x}/${y}${dpr >= 2 ? '@2x' : ''}.png?key=${MAPTILER_ACCESS_TOKEN}`
+    }
+
     return (
         <VStack display="fix">
             {loaded &&
                 <Flex display="fix" justify="center">
-                    <Button position="absolute" zIndex="popover" right="2" ml={2} colorScheme="blue" onClick={() => setFollow(!follow)}>{!follow ? 'Track' : 'Untrack'}</Button>                
-                    <Map provider={osm} height={window.innerHeight-130} borderRadius={50} center={coord} defaultZoom={3} scrollWheelZoom={false}
+                    <Button position="absolute" zIndex="popover" right="0.5" ml={2} colorScheme="blue" onClick={() => setFollow(!follow)}>{!follow ? 'Track' : 'Untrack'}</Button>
+                    <Map provider={mapTiler} 
+                        dprs={[1, 2]} 
+                        height={window.innerHeight - 130} 
+                        // defaultCenter={[50.879, 4.6997]} 
+                        boxClassname="myPigeonMap"
+                        center={coord} 
+                        defaultZoom={3} 
+                        scrollWheelZoom={false}
                         metaWheelZoom={true}
-                        style={{
-                            
-                        }}
+                        limitBounds="edge"
+                        maxZoom={3}
                     >
                         <ZoomControl />
                         <Marker
