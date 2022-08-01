@@ -139,7 +139,7 @@ function DisplaySat() {
                         scrollWheelZoom={false}
                         metaWheelZoom={true}
                         limitBounds="edge"
-                        maxZoom={3}
+                        minZoom={3}
                     >
                         <ZoomControl />
                         <Marker
