@@ -124,7 +124,7 @@ function DisplaySat() {
 
     
     function mapTiler(x, y, z, dpr) {
-        return `https://api.maptiler.com/maps/${MAPID}/${z}/${x}/${y}${dpr >= 2 ? '@2x' : ''}.png?key=${MAPTILER_ACCESS_TOKEN}`
+        return `https://api.maptiler.com/maps/${MAPID}/256/${z}/${x}/${y}${dpr >= 2 ? '@2x' : ''}.png?key=${MAPTILER_ACCESS_TOKEN}`
     }
 
     return (
@@ -136,9 +136,9 @@ function DisplaySat() {
                         dprs={[1, 2]} 
                         height={window.innerHeight - 130} 
                         boxClassname="myPigeonMap"
-                        defaultCenter={focusCenter}
+                        // defaultCenter={[50, 20]}
                         center={focusCenter}
-                        defaultZoom={3} 
+                        defaultZoom={4} 
                         scrollWheelZoom={false}
                         metaWheelZoom={true}
                         limitBounds="edge"
