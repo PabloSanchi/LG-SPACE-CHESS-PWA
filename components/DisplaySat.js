@@ -40,21 +40,24 @@ function DisplaySat() {
         // console.log('loading...');
         let coords = getLatLongFromTle();
         setCoord(coords);
+        setFocusCenter(coords);
         setInfo(`[lat, lng]: ${coords[0]}, ${coords[1]}`);
         setLoaded(true);
-
     }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            let coords = getLatLongFromTle();
-            setCoord(coords);
-            setFocusCenter(coords);
-            setInfo(`[lat, lng]: ${coords[0]}, ${coords[1]}`);
-
+            getCoords();
         }, 2000);
         return () => clearInterval(interval);
-    }, []);
+    });
+
+    function getCoords() {
+        let coords = getLatLongFromTle();
+        setCoord(coords);
+        if(follow) setFocusCenter(coords);
+        setInfo(`[lat, lng]: ${coords[0]}, ${coords[1]}`);
+    }
 
     function getLatLongFromTle() {
         // Initialize a satellite record
@@ -132,9 +135,9 @@ function DisplaySat() {
                     <Map provider={mapTiler} 
                         dprs={[1, 2]} 
                         height={window.innerHeight - 130} 
-                        // defaultCenter={[50.879, 4.6997]} 
                         boxClassname="myPigeonMap"
-                        center={coord} 
+                        defaultCenter={focusCenter}
+                        center={focusCenter}
                         defaultZoom={3} 
                         scrollWheelZoom={false}
                         metaWheelZoom={true}
