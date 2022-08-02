@@ -35,9 +35,9 @@ function about() {
                 {/* Project logo */}
                 <Image w={45} h={20} src={Spl} alt="main logo"></Image>
                 {/* Author name */}
-                <Text fontSize='xl' fontWeight='bold'>Author: Pablo Sanchidrián</Text>
+                <Text fontSize='xl' fontWeight='bold'>Author: Pablo {`Sanchidri\u00E1n`}</Text>
                 {/* Mentor name */}
-                <Text fontSize='xl' fontWeight='bold'>Mentor: Víctor Sánchez</Text>
+                <Text fontSize='xl' fontWeight='bold'>Mentor: {`V\u00EDctor`} {`S\u00E1nchez`}</Text>
                 <Divider w={120} orientation='horizontal' />
                 {/* Author contact */}
                 <Text fontSize='xl' >Author Contact info:</Text>
