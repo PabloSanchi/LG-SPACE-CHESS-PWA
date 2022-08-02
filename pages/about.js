@@ -65,7 +65,7 @@ function about() {
                 <Text maxW={'3xl'} p={5} >
                     A Newspace-related visualization project in collaboration with Hydra-Space.
                     The basic idea is to use the Liquid Galaxy cluster to visualize a world chess game that will happen 
-                    with people worldwide and through satellite communications, a world's first !!!
+                    with people worldwide and through satellite communications, a world&apos;s first !!!
                     <br/><br/>
                     Two teams, the Earth (you) and the Space (a strong AI)
                     Every day the Earth makes, at least, one move,
