@@ -1,5 +1,5 @@
 import React from 'react'
-import { VStack, Text, HStack, Box } from '@chakra-ui/react';
+import { VStack, Text, HStack, Box, Icon, Flex, Link, Divider  } from '@chakra-ui/react';
 import Head from 'next/head'
 import Header from '../components/Header';
 import Image from 'next/image';
@@ -7,6 +7,17 @@ import LQlogo from '../public/logoLg.png';
 import FirebaseIcon from '../public/firebaseLogo.png';
 import Gsoc from '../public/logoGsoc.png';
 import Spl from '../public/Spl.png';
+
+import { FaGithub, FaEnvelope, FaLinkedinIn } from 'react-icons/fa';
+
+function SocialMediaButton({ where, icon, text }) {
+    return (
+        <Flex align="center" gap={1}>
+            <Icon as={icon} />
+            <Link href={where} isExternal fontSize='2xl'>{text}</Link>
+        </Flex>
+    )
+}
 
 function about() {
     return (
@@ -20,33 +31,55 @@ function about() {
 
             <Header />
 
-            <VStack >
-                {/* <Image src={Spc} width="2000" height="2000" /> */}
-                {/* <Text maxW={'6xl'} fontSize={30} >Liquid Galaxy Space Chess</Text> */}
+            <VStack align="center" justify='center'>
+                {/* Project logo */}
                 <Image w={45} h={20} src={Spl} alt="main logo"></Image>
-                <Text maxW={'6xl'} p={5} >
-                    A Newspace related visualization project in collaboration with Hydra-Space.
-                    The basic idea is to use the Liquid Galaxy cluster as a handler and visualizer of a world chess game
-                    that will happen with people around the world and through satellite communications, a world&apos;s first !!!
-                </Text>
-                <Text maxW={'6xl'} p={5} >
-                    Two teams, the Earth (you) and the Space (a strong AI) <br/>
-                    Every day the Earth makes one move, the most common move between you all, so play as a community and
-                    not as an individual.
-                    <br /><br />
-                    Once the Earth has made the move, wait for the Space.
-                    The satellite has its own orbit so you may not see its move in hours, so be patient.
-                </Text>
-
-                {/* templateColumns="repeat(2, 0.5fr)" gap={2} */}
+                {/* Author name */}
+                <Text fontSize='2xl' fontWeight='bold'>Author: Pablo Sanchidrián</Text>
+                {/* Mentor name */}
+                <Text fontSize='2xl' fontWeight='bold'>Mentor: Víctor Sánchez</Text>
+                <Divider w='sm' orientation='horizontal' />
+                {/* Author contact */}
+                <Text fontSize='2xl' >Author Contact info:</Text>
+                <Box display={{ base: 'block', md: 'block' }} flexBasis={{ base: '100%', md: 'auto' }} >
+                    <Flex
+                        align="center"
+                        justify={['center', 'space-between', 'flex-end', 'flex-end']}
+                        direction={['column', 'row', 'row', 'row']}
+                        pt={[4, 4, 0, 0]}
+                        gap={4}
+                    >
+                        <SocialMediaButton where='mailto:pablo.sanchi.herrera@gmail.com' icon={FaEnvelope} text='Mail' />
+                        <SocialMediaButton where='https://github.com/PabloSanchi' icon={FaGithub} text='GitHub' />
+                        <SocialMediaButton where='https://www.linkedin.com/in/pablosanchidrian' icon={FaLinkedinIn} text='LinkedIn' />
+                    </Flex>
+                </Box>
+        
+                {/* Logos */}
                 <HStack maxW={'lg'} p={10} >
                     <Image p={20} src={LQlogo} alt="lq logo"></Image>
                     <Image p={20} src={Gsoc} alt="main gsoc"></Image>
                 </HStack>
 
+                {/* Project Description */}
+                <Text maxW={'3xl'} p={5} >
+                    A Newspace-related visualization project in collaboration with Hydra-Space.
+                    The basic idea is to use the Liquid Galaxy cluster to visualize a world chess game that will happen 
+                    with people worldwide and through satellite communications, a world's first !!!
+                    <br/><br/>
+                    Two teams, the Earth (you) and the Space (a strong AI)
+                    Every day the Earth makes, at least, one move,
+                    the most common move among you all, so play as a community and not as an individual.
+                    <br/><br/>
+                    Once the Earth has made a move, wait for Space.
+                    The satellite has its own orbit so you may not see it move in hours, so be patient.
+                </Text>
+
             </VStack>
         </div>
     )
 }
+
+
 
 export default about

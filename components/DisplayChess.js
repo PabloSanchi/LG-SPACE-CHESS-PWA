@@ -332,7 +332,8 @@ function DisplayChess() {
 
             <Flex direction="column">
                 <Toaster />
-                <Input size="sm" focusBorderColor='blue.300s' placeholder='Enter url' onChange={(e) => setUrlSoc(e.target.value)} />
+                
+                <Input mb={1} size="sm" focusBorderColor='blue.300s' placeholder='Enter url' onChange={(e) => setUrlSoc(e.target.value)} />
                 {error && <strong>Error: {JSON.stringify(error)}</strong>}
                 {loading && <TailSpin type="Puff" color="#808080" height="100%" width="100%" />}
 
@@ -348,10 +349,13 @@ function DisplayChess() {
                     </HStack>
 
                 }
-
+                
+                <HStack >
                 {userDoc && <Badge m={1} colorScheme='purple'> LGRig IP: {userDoc.data()?.lqrigip}</Badge>}
                 {value && <Badge m={1} colorScheme={value.data()?.turn == 'w' ? "blue" : "yellow"}>
                     Turn: {value.data()?.turn == 'w' ? "Earth" : "Space"}</Badge>}
+                </HStack>
+                
                 {userDoc && value &&
                     <Chessboard
                         boardWidth={isMobile ? (dimensions.width - 20 > 560 ? 340 : dimensions.width - 20) : 560}
@@ -373,6 +377,8 @@ function DisplayChess() {
                         </Button>
                     </Text>
                 }
+
+                
 
                 <Text m={1}></Text>
 
