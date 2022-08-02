@@ -31,16 +31,16 @@ function about() {
 
             <Header />
 
-            <VStack align="center" justify='center'>
+            <VStack>
                 {/* Project logo */}
                 <Image w={45} h={20} src={Spl} alt="main logo"></Image>
                 {/* Author name */}
-                <Text fontSize='2xl' fontWeight='bold'>Author: Pablo Sanchidrián</Text>
+                <Text fontSize='xl' fontWeight='bold'>Author: Pablo Sanchidrián</Text>
                 {/* Mentor name */}
-                <Text fontSize='2xl' fontWeight='bold'>Mentor: Víctor Sánchez</Text>
-                <Divider w='sm' orientation='horizontal' />
+                <Text fontSize='xl' fontWeight='bold'>Mentor: Víctor Sánchez</Text>
+                <Divider w={120} orientation='horizontal' />
                 {/* Author contact */}
-                <Text fontSize='2xl' >Author Contact info:</Text>
+                <Text fontSize='xl' >Author Contact info:</Text>
                 <Box display={{ base: 'block', md: 'block' }} flexBasis={{ base: '100%', md: 'auto' }} >
                     <Flex
                         align="center"
@@ -54,7 +54,7 @@ function about() {
                         <SocialMediaButton where='https://www.linkedin.com/in/pablosanchidrian' icon={FaLinkedinIn} text='LinkedIn' />
                     </Flex>
                 </Box>
-        
+
                 {/* Logos */}
                 <HStack maxW={'lg'} p={10} >
                     <Image p={20} src={LQlogo} alt="lq logo"></Image>

@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { VStack, Text, Center, Button, Flex, Box } from '@chakra-ui/react';
-import dynamic from 'next/dynamic'
-
+import { VStack, Button, Flex } from '@chakra-ui/react';
 
 import { Map, Marker, ZoomControl } from "pigeon-maps"
-import { osm } from 'pigeon-maps/providers'
-
-
-import iconUrl2 from '../public/satimage.png';
 
 const satellite = require('satellite.js');
 
@@ -35,7 +29,7 @@ function DisplaySat() {
     const tleLine2 = '2 25544  51.6400 208.9163 0006317  69.9862  25.2906 15.54225995 67660';
     const MAPTILER_ACCESS_TOKEN = 'SnjwKQpOHvLSvRXmRQ8Q';
     const MAPID = 'streets'
-    
+
     useEffect(() => {
         // console.log('loading...');
         let coords = getLatLongFromTle();
@@ -43,6 +37,7 @@ function DisplaySat() {
         setFocusCenter(coords);
         setInfo(`[lat, lng]: ${coords[0]}, ${coords[1]}`);
         setLoaded(true);
+        console.log(coord);
     }, []);
 
     useEffect(() => {
@@ -55,7 +50,7 @@ function DisplaySat() {
     function getCoords() {
         let coords = getLatLongFromTle();
         setCoord(coords);
-        if(follow) setFocusCenter(coords);
+        if (follow) setFocusCenter(coords);
         setInfo(`[lat, lng]: ${coords[0]}, ${coords[1]}`);
     }
 
@@ -122,23 +117,25 @@ function DisplaySat() {
         // if (follow) map.setView(center);
     }
 
-    
+
     function mapTiler(x, y, z, dpr) {
         return `https://api.maptiler.com/maps/${MAPID}/256/${z}/${x}/${y}${dpr >= 2 ? '@2x' : ''}.png?key=${MAPTILER_ACCESS_TOKEN}`
     }
 
+
     return (
         <VStack display="fix">
             {loaded &&
-                <Flex display="fix" justify="center">
+                // <Flex display="fix" justify="center">
+                <Flex>
                     <Button position="absolute" zIndex="popover" right="0.5" ml={2} colorScheme="blue" onClick={() => setFollow(!follow)}>{!follow ? 'Track' : 'Untrack'}</Button>
-                    <Map provider={mapTiler} 
-                        dprs={[1, 2]} 
-                        height={window.innerHeight - 130} 
+                    <Map provider={mapTiler}
+                        dprs={[1, 2]}
+                        height={window.innerHeight - 130}
                         boxClassname="myPigeonMap"
                         // defaultCenter={[50, 20]}
                         center={focusCenter}
-                        defaultZoom={4} 
+                        defaultZoom={4}
                         scrollWheelZoom={false}
                         metaWheelZoom={true}
                         limitBounds="edge"
