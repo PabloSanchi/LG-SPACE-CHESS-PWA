@@ -26,7 +26,6 @@ function DisplaySat() {
         setFocusCenter(coords);
         setInfo(`[lat, lng]: ${coords[0]}, ${coords[1]}`);
         setLoaded(true);
-        console.log(coord);
     }, []);
 
     useEffect(() => {
@@ -117,7 +116,7 @@ function DisplaySat() {
                         boxClassname="myPigeonMap"
                         defaultCenter={[50, 20]}
                         center={focusCenter}
-                        defaultZoom={3}
+                        defaultZoom={4}
                         scrollWheelZoom={false}
                         metaWheelZoom={true}
                         limitBounds="edge"
