@@ -125,7 +125,7 @@ function DisplaySat() {
 
     return (
         <VStack display="fix">
-            {loaded &&
+            {true &&
                 // <Flex display="fix" justify="center">
                 <Flex>
                     <Button position="absolute" zIndex="popover" right="0.5" ml={2} colorScheme="blue" onClick={() => setFollow(!follow)}>{!follow ? 'Track' : 'Untrack'}</Button>
@@ -133,9 +133,9 @@ function DisplaySat() {
                         dprs={[1, 2]}
                         height={window.innerHeight - 130}
                         boxClassname="myPigeonMap"
-                        // defaultCenter={[50, 20]}
+                        defaultCenter={[50, 20]}
                         center={focusCenter}
-                        defaultZoom={4}
+                        defaultZoom={3}
                         scrollWheelZoom={false}
                         metaWheelZoom={true}
                         limitBounds="edge"
