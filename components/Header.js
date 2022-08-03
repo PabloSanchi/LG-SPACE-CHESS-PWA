@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Flex, Box, 
+import { Flex, Box, Icon, 
         Text, Modal, 
         ModalOverlay, ModalContent, 
         ModalHeader, ModalCloseButton, 
@@ -18,6 +18,8 @@ import { useRouter } from 'next/router';
 import { isIPV4Address } from "ip-address-validator";
 import Link from "next/link"; 
 
+import { FaHome } from 'react-icons/fa';
+import { MdSpaceDashboard } from 'react-icons/md'
 
 const Header = (props) => {
 
@@ -69,7 +71,7 @@ const Header = (props) => {
             >
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>LG Rig Modal</ModalHeader>
+                    <ModalHeader>LG Settings</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <FormControl>
@@ -97,10 +99,8 @@ const Header = (props) => {
     return (
         <Flex
             color='white'
-            // backgroundColor='red.700'
-            // bgGradient='linear(to-r, purple.700,blue.700)'
             bgGradient='linear(to-r, #CD853F, #DAA520)'
-            mb={2}
+            mb={1}
             p={8}
             as="nav"
             align="center"
@@ -109,16 +109,28 @@ const Header = (props) => {
             w="100%"
         >
             <Toaster />
-            <Box w="255">
-                <Text fontSize="lg" fontWeight="bold" noOfLines={1} onClick={() => router.push('/')}
-                    _hover={{
-                        cursor: "pointer",
-                    }}
-                >
-                    LG SPACE CHESS
-                </Text>
-                <Text>{user?.email ? user.displayName : JSON.stringify(user)}</Text>
-            </Box>
+            <HStack 
+                onClick={() => router.push('/')}
+                align='center'
+                justify='center'
+                direction='row'
+                w="255"
+                _hover={{
+                    transform: 'scale(0.95)',
+                    cursor: "pointer",
+                    transition: 'transform 0.2s ease-in-out'
+                }}
+            >
+                <Box mr={3}>
+                    <Icon w={10} h={10} as={MdSpaceDashboard} />
+                </Box>
+                <Box>
+                    <Text fontSize="lg" fontWeight="bold" noOfLines={1} onClick={() => router.push('/') }>
+                        <Flex align="center" gap={1}> LG SPACE CHESS</Flex>
+                    </Text>
+                    <Text>{user?.email ? user.displayName : JSON.stringify(user)}</Text>
+                </Box>
+            </HStack>
 
             <Box display={{ base: 'block', md: 'none' }} onClick={toggleMenu}>
                 {show ? <CloseIcon w={3} h={8} /> : <HamburgerIcon w={5} h={10} />}
@@ -134,7 +146,7 @@ const Header = (props) => {
 
                     <CustomButton mbVal={2} mrVal={3} foo={() => { router.push('/about') }} name="About" />
                     <CustomButton mbVal={2} mrVal={3} foo={() => { router.push('/findsat') }} name="FindSat" />
-                    <CustomButton mbVal={2} mrVal={3} foo={onOpen} name="LGRig" />
+                    <CustomButton mbVal={2} mrVal={3} foo={onOpen} name="LGSettings" />
                     <CustomButton mbVal={0} mrVal={0} foo={handleSignOut} name="SignOut" />
                 </Flex>
             </Box>
@@ -152,7 +164,7 @@ function CustomButton({ mbVal, mrVal, foo, name}) {
             width="100%"
             mb = {{ base: mbVal, sm: 0 }}
             mr = {{ base: 0, sm: mrVal }}
-            display="block"
+            
             onClick={foo}
         >{name}
         </Button>

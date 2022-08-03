@@ -4,7 +4,6 @@ import Head from 'next/head'
 import Header from '../components/Header';
 import Image from 'next/image';
 import LQlogo from '../public/logoLg.png';
-import FirebaseIcon from '../public/firebaseLogo.png';
 import Gsoc from '../public/logoGsoc.png';
 import Spl from '../public/Spl.png';
 
@@ -76,6 +75,10 @@ function about() {
                 </Text>
 
             </VStack>
+
+            <Flex h={10} align='center' textAlign='center' backgroundColor="black" noOfLines={2}>
+                <Text color="white" >@Liquid Galaxy Space Chess 2022</Text> 
+            </Flex>
         </div>
     )
 }
