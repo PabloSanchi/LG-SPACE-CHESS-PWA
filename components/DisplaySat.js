@@ -1,29 +1,18 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { VStack, Button, Flex } from '@chakra-ui/react';
-
 import { Map, Marker, ZoomControl } from "pigeon-maps"
 
 const satellite = require('satellite.js');
 
 function DisplaySat() {
 
-    // useEffect(() => {
-    //     (async function init() {
-    //         delete L.Icon.Default.prototype._getIconUrl;
-
-    //         L.Icon.Default.mergeOptions({
-    //             iconRetinaUrl: iconRetinaUrl.src,
-    //             iconUrl: iconUrl.src,
-    //             shadowUrl: shadowUrl.src,
-    //         });
-    //     })();
-    // }, []);
-
     const [loaded, setLoaded] = useState(false);
     const [info, setInfo] = useState('loading...');
     const [coord, setCoord] = useState([51.505, -0.09]);
     const [focusCenter, setFocusCenter] = useState([51.505, -0.09]);
     const [follow, setFollow] = useState(true);
+    const [hue, setHue] = useState(0)
+    const color = `hsl(${hue % 360}deg 39% 70%)`
 
     const tleLine1 = '1 51080U 22002DA  22200.13694574  .00008725  00000+0  44414-3 0  9996';
     const tleLine2 = '2 25544  51.6400 208.9163 0006317  69.9862  25.2906 15.54225995 67660';
@@ -112,16 +101,9 @@ function DisplaySat() {
         return [latitudeDeg, longitudeDeg];
     }
 
-    function ChangeView({ center }) {
-        // const map = useMap();
-        // if (follow) map.setView(center);
-    }
-
-
     function mapTiler(x, y, z, dpr) {
         return `https://api.maptiler.com/maps/${MAPID}/256/${z}/${x}/${y}${dpr >= 2 ? '@2x' : ''}.png?key=${MAPTILER_ACCESS_TOKEN}`
     }
-
 
     return (
         <VStack display="fix">
@@ -143,9 +125,10 @@ function DisplaySat() {
                     >
                         <ZoomControl />
                         <Marker
-                            color={`hsl(${120 % 360}deg 39% 70%)`}
+                            color={color}
                             width={50}
                             anchor={coord}
+                            onClick={() => setHue(hue + 20)} 
                         />
                     </Map>
                 </Flex>
