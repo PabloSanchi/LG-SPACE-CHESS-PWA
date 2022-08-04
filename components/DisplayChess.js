@@ -4,7 +4,6 @@ import { Chessboard } from "react-chessboard";
 import { TailSpin } from "react-loader-spinner";
 import { Chess } from "chess.js";
 import toast, { Toaster } from 'react-hot-toast';
-import Header from './Header';
 
 import {
     Modal, ModalOverlay, ModalContent,
@@ -23,35 +22,41 @@ import ReactNipple from 'react-nipple';
 import { MdOutlineCenterFocusWeak } from 'react-icons/md'
 import { CloseIcon } from '@chakra-ui/icons';
 
-import { Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, } from '@chakra-ui/react'
-import { Switch } from '@chakra-ui/react'
+import { Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, } from '@chakra-ui/react';
+import { Switch, RadioGroup, Radio } from '@chakra-ui/react';
 
 import requests from '../utils/requests';
+import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine';
 
 function DisplayChess() {
 
-    // variable definition
+    // VARIABLE DECLARATIONS
+    // socket and status
     let soc = 'null';
-    const router = useRouter();
     const [socket, setSocket] = useState(null);
     const [conStat, setConStat] = useState('Disconnected');
     const [enabledCon, setEnableCon] = useState(false);
+    const [urlSoc, setUrlSoc] = useState('');
+    // navigation
+    const router = useRouter();
+    // game mode
+    const [gamemode, setGamemode] = useState(1);
+    const [offlineGame, setOfflineGame] = useState(new Chess())
+    const [offlineStatus, setOfflineStatus] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+    // user data
     const [user, loadingUser] = useAuthState(auth); // user
     const [arrow, setArrow] = useState(null); // chessboard arrow
+    // media query
     const [isMobile] = useMediaQuery('(max-width: 560px)');
     const [dimensions, setDimensions] = useState({
         height: window.innerHeight,
         width: window.innerWidth
     }) // responsive (affect chessboard only)
-
-    const [urlSoc, setUrlSoc] = useState('');
+    // vote modal
     const { isOpen, onOpen, onClose } = useDisclosure();
-
+    // references
     const initialRef = useRef(null);
     const finalRef = useRef(null);
-
-    const plays = [1,2,3,4,5,6,7,8,9,10];
-
     // fetch chessboard status
     const [value, loading, error] = useDocument(
         doc(db, 'chess', 'ChessBoardStatus'),
@@ -114,7 +119,7 @@ function DisplayChess() {
     handleConnect -> connect client with lgrig via WebSockets
     */
     const handleConnect = async () => {
-        if(conStat == 'Connected') {
+        if (conStat == 'Connected') {
             handleDisconnect();
             return;
         }
@@ -218,6 +223,73 @@ function DisplayChess() {
         }
     }
 
+    /*
+    onDropOffline -> set onDrop and AI move
+        - move validation
+        - AI move
+    */
+    async function onDropOffline(sourceSquare, targetSquare) {
+        // apply move
+        let move = offlineGame.move({
+            from: sourceSquare,
+            to: targetSquare,
+            promotion: "q",
+        });
+        // check if move is legal
+        if (move === null) {
+            notify('❌ Illegal Move: ' + targetSquare);
+            return false;
+        }
+
+        // console.log move
+        console.log(`${sourceSquare} -> ${targetSquare}`);
+        
+
+        if (socket) {
+            socket.emit('newStatus', {
+                status: '', 
+                move: (sourceSquare + ' ' + targetSquare)
+            });
+        }
+
+        setOfflineStatus(offlineGame.fen().split(' ')[0]);
+        console.log(offlineGame.fen().split(' ')[0]);
+        console.log(offlineStatus);
+
+        blackMove(offlineGame.fen().split(' ')[0]);
+        return true;
+    }
+
+    async function blackMove(stats) {
+        // make AI move
+        let response = new Game(offlineGame.fen());
+        let move = response.aiMove(1);
+        let key = Object.keys(move)[0];
+        let vote = `${key.toLowerCase()}_${move[key].toLowerCase()}`;
+
+
+        const bestMoveSan = offlineGame.move({
+            from: vote.split('_')[0],
+            to:  vote.split('_')[1],
+            promotion: "q",
+        });
+
+        // console.log move AI
+        console.log(`AI Move: ${key} -> ${move[key]}`);
+
+        setTimeout(() => {
+            if (socket) {
+                socket.emit('newStatus', {
+                    status: '', 
+                    move: (vote.split('_')[0] + ' ' + vote.split('_')[1])
+                });
+            }
+        },1000);
+        
+
+        setOfflineStatus(offlineGame.fen().split(' ')[0]);
+    }
+
     /* 
     onDrop modification
         we give some extra functions:
@@ -225,6 +297,11 @@ function DisplayChess() {
             - save move in the database
     */
     async function onDrop(sourceSquare, targetSquare) {
+
+        // offline play
+        if(gamemode == 2) { 
+            return onDropOffline(sourceSquare, targetSquare);
+        }
 
         if (value.data()?.turn == 'b') {
             notify('⚠️ Wait for your turn');
@@ -337,7 +414,7 @@ function DisplayChess() {
     });
 
 
-    function DrawerExample({ disp, show, color }) {
+    function DrawerDemo({ disp, show, color }) {
         const { isOpen, onOpen, onClose } = useDisclosure()
         const btnRef = React.useRef()
 
@@ -356,20 +433,20 @@ function DisplayChess() {
                         <DrawerHeader>Top 10 Plays</DrawerHeader>
 
                         <DrawerBody>
-                            { Object.keys(requests).map((num) => {
+                            {Object.keys(requests).map((num) => {
                                 return <Text key={num} padding={5} backgroundColor='gray.50' mb={1} borderRadius={10} fontWeight='semibold'
-                                _hover={{
-                                    transform: 'scale(0.95)',
-                                    cursor: 'pointer',
-                                    transition: 'transform 0.2s ease-in-out'
-                                }}
-                                onClick={() => {notify('not defined'); onClose()} }
-                            >
-                                {`${num}`}
-                            </Text>
-                            }) }
- 
-                            
+                                    _hover={{
+                                        transform: 'scale(0.95)',
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.2s ease-in-out'
+                                    }}
+                                    onClick={() => { notify('▶️ ' + num); console.log(requests[num]); onClose() }}
+                                >
+                                    {`${num}`}
+                                </Text>
+                            })}
+
+
                         </DrawerBody>
 
                         <DrawerFooter>
@@ -383,10 +460,35 @@ function DisplayChess() {
         )
     }
 
+
+    function PlacementSetting({ disp, show, color }) {
+        const { isOpen, onOpen, onClose } = useDisclosure()
+        
+        return (
+            <>
+                <Button display={disp} disabled={show} mt={10} m={1} w={20} size='sm' colorScheme={color} onClick={onOpen} >Settings</Button>
+                <Drawer placement={'right'} onClose={onClose} isOpen={isOpen}>
+                    <DrawerOverlay />
+                    <DrawerContent>
+                        <DrawerHeader borderBottomWidth='1px'>Game Settings</DrawerHeader>
+                        <DrawerBody>
+                            <Text fontSize='sm' fontWeight='semibold' mb={2}>Choose Oponent</Text>
+                            <RadioGroup onChange={setGamemode} value={gamemode}>
+                                <Flex direction='column' gap={4}>
+                                    <Radio value={1}>Satellite</Radio>
+                                    <Radio value={2}>AI</Radio>
+                                    <Radio value={3}>Online</Radio>
+                                </Flex>
+                            </RadioGroup>
+                        </DrawerBody>
+                    </DrawerContent>
+                </Drawer>
+            </>
+        )
+    }
+
     return (
         <VStack h="calc(100vh-3.5rem)" w="100vw" position="absolute">
-            {/* Header */}
-            {/* <Header /> */}
             {/* Notifications */}
             <Toaster />
             {/* Main */}
@@ -402,24 +504,29 @@ function DisplayChess() {
                             justify={['left']}
                             direction={['row']}
                         >
-                            {/* <Button m={1} size='sm' colorScheme={conStat == 'Connected' ? 'green' : 'red'} onClick={handleConnect}>LiquidGalaxy {conStat == 'Connected' ? 'X': '' }</Button> */}
-                            <Text mr={1}> Liquid Galaxy: </Text>
-                            <Switch  size='lg' colorScheme='green' id='connected'  onChange={(data) => {handleConnect()}} />
+                            {/* <Text mr={1}> Liquid Galaxy: </Text>
+                            <Switch  size='lg' colorScheme='green' id='connected'  onChange={(data) => {handleConnect()}} /> */}
                             <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
-                            {/* {conStat == 'Connected' &&
+                            <Button m={1} size='sm' colorScheme={conStat == 'Connected' ? 'green' : 'red'} onClick={handleConnect}>LiquidGalaxy {conStat == 'Connected' ? 'X' : ''}</Button>
+                            {conStat == 'Connected' &&
                                 <IconButton m={1} colorScheme='red' size='sm' icon={<CloseIcon />} onClick={handleDisconnect} />
-                            } */}
+                            }
                         </Flex>
                     }
                     {/* LGRig Controller */}
-                    {/* {conStat == 'Connected' && */}
                     <VStack display={{ base: (enabledCon ? 'flex' : 'none'), md: 'flex', lg: 'flex' }} align='center' justify='center'>
+
+                        { /* Settings and demo */}
+                        <HStack>
+                            <PlacementSetting disp={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} color='orange'/>
+                            <DrawerDemo disp={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} color='orange' />
+                        </HStack>
                         {/* View options */}
                         <HStack >
                             <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} size='sm' colorScheme='orange' onClick={() => sendInstruction('showChess')}>Chess</Button>
                             <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} size='sm' colorScheme='orange' onClick={() => sendInstruction('showEarth')}>Earth</Button>
-                            <DrawerExample disp={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} show={!enabledCon} color='orange' />
                         </HStack>
+
                         {/* Chessboard position controls */}
                         <HStack >
                             <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView('white')}>♖</Button>
@@ -428,6 +535,7 @@ function DisplayChess() {
                             </Button>
                             <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView('black')}>♜</Button>
                         </HStack>
+
                         {/* Chessboard vertical position controls */}
                         <HStack >
                             <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView(+0.1)}>↺</Button>
@@ -436,7 +544,6 @@ function DisplayChess() {
                             <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView(-0.1)}>↻</Button>
                         </HStack >
                     </VStack>
-                    {/* } */}
 
                     {/* JoySticks */}
                     {conStat == 'Connected' &&
@@ -452,7 +559,7 @@ function DisplayChess() {
                                     } catch (err) { }
                                 }} lX={true} lY={false}
                             />
-                            <Box display={{base: 'block', md: 'block', lg: 'none'}}>
+                            <Box display={{ base: 'block', md: 'block', lg: 'none' }}>
                                 <CustomNipple color={enabledCon ? "blue" : "gray"}
                                     move={(evt, data) => {
                                         try {
@@ -467,25 +574,25 @@ function DisplayChess() {
                             </Box>
                         </HStack>
                     }
-
                 </VStack>
 
+                {/* Data & Board*/}
                 <Box align="center" mb={3}>
                     <HStack>
                         {userDoc && <Badge m={1} colorScheme='purple'> IP: {userDoc.data()?.lqrigip}</Badge>}
                         {value && <Badge m={1} colorScheme={value.data()?.turn == 'w' ? "blue" : "yellow"}>
                             Turn: {value.data()?.turn == 'w' ? "Earth" : "Satellite"}</Badge>}
-                            {userDoc && <Badge mt={3} colorScheme='teal'>Attempts: {userDoc.data()?.limit}</Badge>}
+                        {userDoc && <Badge mt={3} colorScheme='teal'>Attempts: {userDoc.data()?.limit}</Badge>}
                     </HStack>
 
                     {userDoc && value &&
                         <Chessboard
                             boardWidth={isMobile ? (dimensions.width - 20 > 560 ? 340 : dimensions.width - 20) : 500}
-                            position={value.data().status}
+                            position={gamemode == 1 ? value.data()?.status : offlineStatus}
                             onPieceDrop={onDrop}
                             customDropSquareStyle={{ boxShadow: 'inset 0 0 1px 6px rgba(255,200,100,0.75)' }}
                             animationDuration={500}
-                            customArrows={arrow === null ? [] : [arrow]}
+                            customArrows={arrow === null || gamemode == 2 ? [] : [arrow]}
                             customBoardStyle={{ borderRadius: '10px', boxShadow: '0 5px 15px rgba(0, 0, 0, 0.5 ' }}
                         />
                     }
@@ -497,8 +604,10 @@ function DisplayChess() {
                     } */}
                 </Box>
 
+
+                {/* right joystick only for large view */}
                 {conStat == 'Connected' &&
-                    <Center mt={280} align="center" justify="sspace-between" display={{base: 'none', md: 'none', lg: 'block'}} >
+                    <Center mt={280} align="center" justify="sspace-between" display={{ base: 'none', md: 'none', lg: 'block' }} >
                         <CustomNipple color={enabledCon ? "blue" : "gray"}
                             move={(evt, data) => {
                                 try {
@@ -513,11 +622,6 @@ function DisplayChess() {
                     </Center>
                 }
             </Flex>
-
-            <Text m={1}></Text>
-
-            {/* Divider */}
-            <Text m={10}></Text>
 
             {/* Show votes */}
             <GetModal
@@ -558,6 +662,7 @@ function CustomNipple({ color, move, lX, lY, display }) {
     );
 }
 
+// votes modal
 function GetModal({ votes, open, close, iniFR, finFR }) {
     let keys = 0;
     return (
@@ -604,4 +709,4 @@ function GetModal({ votes, open, close, iniFR, finFR }) {
     )
 }
 
-export default DisplayChess 
+export default DisplayChess
