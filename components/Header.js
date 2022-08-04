@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, Component } from 'react';
 import { Flex, Box, Icon, 
         Text, Modal, 
         ModalOverlay, ModalContent, 
@@ -20,6 +20,21 @@ import Link from "next/link";
 
 import { FaHome } from 'react-icons/fa';
 import { MdSpaceDashboard } from 'react-icons/md'
+
+
+// import { hookstate, useHookstate, State } from '@hookstate/core';
+
+// // internal variables
+// const globalState = hookstate(0);
+// const wrapState = () => ({
+//     get: () => s.value,
+//     increment: () => s.set(p => p + 1)
+// });
+
+// // The following 2 functions can be exported now:
+// export const accessGlobalState = () => wrapState(globalState)
+// export const useGlobalState = () => wrapState(useHookstate(globalState))
+
 
 const Header = (props) => {
 
@@ -143,7 +158,7 @@ const Header = (props) => {
                     direction={['column', 'row', 'row', 'row']}
                     pt={[4, 4, 0, 0]}
                 >
-
+                    
                     <CustomButton mbVal={2} mrVal={3} foo={() => { router.push('/about') }} name="About" />
                     <CustomButton mbVal={2} mrVal={3} foo={() => { router.push('/findsat') }} name="FindSat" />
                     <CustomButton mbVal={2} mrVal={3} foo={onOpen} name="LGSettings" />

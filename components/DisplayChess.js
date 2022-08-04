@@ -28,12 +28,26 @@ import { Switch, RadioGroup, Radio } from '@chakra-ui/react';
 import requests from '../utils/requests';
 import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine';
 
+
+import { State } from './Header';
+
+import { setGlobalState, useGlobalState } from '../components/socketState';
+
+
+
 function DisplayChess() {
+
+
 
     // VARIABLE DECLARATIONS
     // socket and status
     let soc = 'null';
-    const [socket, setSocket] = useState(null);
+    // const [socket, setSocket] = useState(null);
+    const [socket] = useGlobalState('socket');
+    const setSocket = (soc) => {
+        setGlobalState('socket', soc);
+    }
+
     const [conStat, setConStat] = useState('Disconnected');
     const [enabledCon, setEnableCon] = useState(false);
     const [urlSoc, setUrlSoc] = useState('');
@@ -83,6 +97,16 @@ function DisplayChess() {
 
     // notifications
     const notify = (text) => toast(text);
+
+
+
+    useEffect(() => {
+        if (socket !== null) {
+            setEnableCon(true); setConStat('Connected');
+
+        }
+    }, [socket]);
+
 
     // fetch arrows (last user vote)
     useEffect(() => {
@@ -163,6 +187,7 @@ function DisplayChess() {
                 console.log(`connect_error due to ${err}`);
                 soc.disconnect();
                 notify('🚫 Fail'); setConStat('Fail'); setEnableCon(false);
+                setSocket(null);
             });
 
         } catch (err) {
@@ -243,11 +268,11 @@ function DisplayChess() {
 
         // console.log move
         console.log(`${sourceSquare} -> ${targetSquare}`);
-        
+
 
         if (socket) {
             socket.emit('newStatus', {
-                status: '', 
+                status: '',
                 move: (sourceSquare + ' ' + targetSquare)
             });
         }
@@ -270,7 +295,7 @@ function DisplayChess() {
 
         const bestMoveSan = offlineGame.move({
             from: vote.split('_')[0],
-            to:  vote.split('_')[1],
+            to: vote.split('_')[1],
             promotion: "q",
         });
 
@@ -280,12 +305,12 @@ function DisplayChess() {
         setTimeout(() => {
             if (socket) {
                 socket.emit('newStatus', {
-                    status: '', 
+                    status: '',
                     move: (vote.split('_')[0] + ' ' + vote.split('_')[1])
                 });
             }
-        },1000);
-        
+        }, 1000);
+
 
         setOfflineStatus(offlineGame.fen().split(' ')[0]);
     }
@@ -299,7 +324,7 @@ function DisplayChess() {
     async function onDrop(sourceSquare, targetSquare) {
 
         // offline play
-        if(gamemode == 2) { 
+        if (gamemode == 2) {
             return onDropOffline(sourceSquare, targetSquare);
         }
 
@@ -463,7 +488,7 @@ function DisplayChess() {
 
     function PlacementSetting({ disp, show, color }) {
         const { isOpen, onOpen, onClose } = useDisclosure()
-        
+
         return (
             <>
                 <Button display={disp} disabled={show} mt={10} m={1} w={20} size='sm' colorScheme={color} onClick={onOpen} >Settings</Button>
@@ -491,6 +516,7 @@ function DisplayChess() {
         <VStack h="calc(100vh-3.5rem)" w="100vw" position="absolute">
             {/* Notifications */}
             <Toaster />
+            <Text>{socket == null ? "null" : socket.id} </Text>
             {/* Main */}
             <Flex direction={{ base: 'column-reverse', md: 'column-reverse', lg: 'row' }}>
 
@@ -518,7 +544,7 @@ function DisplayChess() {
 
                         { /* Settings and demo */}
                         <HStack>
-                            <PlacementSetting disp={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} color='orange'/>
+                            <PlacementSetting disp={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} color='orange' />
                             <DrawerDemo disp={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} color='orange' />
                         </HStack>
                         {/* View options */}
