@@ -16,6 +16,8 @@ export default function Login() {
         <Box p={5} position={'relative'} align='center' >
             <Head>
                 <link rel='manifest' href='/manifest.json' />
+                <meta content='yes' name='apple-mobile-web-app-capable'/>
+                <meta content='yes' name='mobile-web-app-capable'/>
             </Head>
             <Container
                 as={SimpleGrid}

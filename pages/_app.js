@@ -4,6 +4,7 @@ import Login from '../components/Login';
 import { auth } from '../firebase'
 import { useAuthState } from 'react-firebase-hooks/auth';
 import React from 'react'
+import Header from '../components/Header';
 
 function MyApp({ Component, pageProps }) {
 
@@ -15,7 +16,7 @@ function MyApp({ Component, pageProps }) {
       <Login />
     </ChakraProvider>
   )
-  else return( <ChakraProvider> <Component {...pageProps} /> </ChakraProvider> )
+  else return( <ChakraProvider> <Header /><Component {...pageProps} /> </ChakraProvider> )
 }
 
 export default MyApp

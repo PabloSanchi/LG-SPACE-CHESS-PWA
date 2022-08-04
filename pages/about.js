@@ -26,9 +26,11 @@ function about() {
                 <meta name="description" content="" />
                 <link rel="icon" href="/favicon.ico" />
                 <link rel='manifest' href='/manifest.json' />
+                <meta content='yes' name='apple-mobile-web-app-capable'/>
+                <meta content='yes' name='mobile-web-app-capable'/>
             </Head>
 
-            <Header />
+            {/* <Header /> */}
 
             <VStack>
                 {/* Project logo */}

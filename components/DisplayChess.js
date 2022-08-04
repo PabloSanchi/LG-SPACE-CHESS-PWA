@@ -173,6 +173,7 @@ function DisplayChess() {
         if (socket) {
             socket.emit('quit');
             socket.disconnect();
+            socket = null;
             setConStat('Disconnected'); setEnableCon(false);
         }
     }
@@ -368,7 +369,7 @@ function DisplayChess() {
                                 {`Play ${num}`}
                             </Text>
                             }) }
-
+ 
                             
                         </DrawerBody>
 
@@ -386,7 +387,7 @@ function DisplayChess() {
     return (
         <VStack h="calc(100vh-3.5rem)" w="100vw" position="absolute">
             {/* Header */}
-            <Header />
+            {/* <Header /> */}
             {/* Notifications */}
             <Toaster />
             {/* Main */}

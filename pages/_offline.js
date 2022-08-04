@@ -11,8 +11,10 @@ export default function NotFound() {
         <Box>
             <Head>
                 <link rel='manifest' href='/manifest.json' />
+                <meta content='yes' name='apple-mobile-web-app-capable'/>
+                <meta content='yes' name='mobile-web-app-capable'/>
             </Head>
-            <Header />
+            {/* <Header /> */}
             <Box textAlign="center" py={40}>
                 <Heading
                     display="inline-block"

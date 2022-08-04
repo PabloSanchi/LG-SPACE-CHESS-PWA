@@ -156,7 +156,7 @@ const Header = (props) => {
     );
 };
 
-function CustomButton({ mbVal, mrVal, foo, name}) {
+function CustomButton({ mbVal, mrVal, foo, name }) {
     return (
         <Button
             color="orange.800"
