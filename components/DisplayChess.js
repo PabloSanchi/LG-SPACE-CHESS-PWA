@@ -516,7 +516,6 @@ function DisplayChess() {
         <VStack h="calc(100vh-3.5rem)" w="100vw" position="absolute">
             {/* Notifications */}
             <Toaster />
-            <Text>{socket == null ? "null" : socket.id} </Text>
             {/* Main */}
             <Flex direction={{ base: 'column-reverse', md: 'column-reverse', lg: 'row' }}>
 
@@ -533,7 +532,7 @@ function DisplayChess() {
                             {/* <Text mr={1}> Liquid Galaxy: </Text>
                             <Switch  size='lg' colorScheme='green' id='connected'  onChange={(data) => {handleConnect()}} /> */}
                             <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
-                            <Button m={1} size='sm' colorScheme={conStat == 'Connected' ? 'green' : 'red'} onClick={handleConnect}>LiquidGalaxy {conStat == 'Connected' ? 'X' : ''}</Button>
+                            <Button m={1} size='sm' colorScheme={conStat == 'Connected' ? 'red' : 'green'} onClick={handleConnect}>LiquidGalaxy</Button>
                             {conStat == 'Connected' &&
                                 <IconButton m={1} colorScheme='red' size='sm' icon={<CloseIcon />} onClick={handleDisconnect} />
                             }
