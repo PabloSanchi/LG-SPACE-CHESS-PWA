@@ -7,6 +7,10 @@ import LQlogo from '../public/logoLg.png';
 import Gsoc from '../public/logoGsoc.png';
 import Spl from '../public/Spl.png';
 
+
+import { setGlobalState, useGlobalState } from '../components/socketState';
+
+
 import { FaGithub, FaEnvelope, FaLinkedinIn } from 'react-icons/fa';
 
 function SocialMediaButton({ where, icon, text }) {
@@ -19,6 +23,7 @@ function SocialMediaButton({ where, icon, text }) {
 }
 
 function about() {
+
     return (
         <div>
             <Head>

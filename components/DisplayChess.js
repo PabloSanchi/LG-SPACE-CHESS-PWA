@@ -103,7 +103,8 @@ function DisplayChess() {
     useEffect(() => {
         if (socket !== null) {
             setEnableCon(true); setConStat('Connected');
-
+        } else {
+            setEnableCon(false); setConStat('Disconnected');
         }
     }, [socket]);
 
@@ -142,71 +143,71 @@ function DisplayChess() {
     /*
     handleConnect -> connect client with lgrig via WebSockets
     */
-    const handleConnect = async () => {
-        if (conStat == 'Connected') {
-            handleDisconnect();
-            return;
-        }
+    // const handleConnect = async () => {
+    //     if (conStat == 'Connected') {
+    //         handleDisconnect();
+    //         return;
+    //     }
 
-        console.log('IP: ' + userDoc.data()?.lqrigip);
-        setConStat('Loading...');
+    //     console.log('IP: ' + userDoc.data()?.lqrigip);
+    //     setConStat('Loading...');
 
-        try {
-            var ipAux = urlSoc;
-            if (urlSoc == '' && userDoc.data()?.lqrigip != '') {
-                const docRef = doc(db, 'rig', userDoc.data()?.lqrigip);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) ipAux = docSnap.data()?.ip ?? urlSoc;
-            }
+    //     try {
+    //         var ipAux = urlSoc;
+    //         if (urlSoc == '' && userDoc.data()?.lqrigip != '') {
+    //             const docRef = doc(db, 'rig', userDoc.data()?.lqrigip);
+    //             const docSnap = await getDoc(docRef);
+    //             if (docSnap.exists()) ipAux = docSnap.data()?.ip ?? urlSoc;
+    //         }
 
-            console.log('Connecting to: ', ipAux);
+    //         console.log('Connecting to: ', ipAux);
 
-            soc = io(ipAux, {
-                'reconnect': false,
-                'connect_timeout': 2000,
-                'transports': ['websocket', 'polling'],
-                "query": "mobile=true",
-                extraHeaders: {
-                    "ngrok-skip-browser-warning": true
-                }
-            });
+    //         soc = io(ipAux, {
+    //             'reconnect': false,
+    //             'connect_timeout': 2000,
+    //             'transports': ['websocket', 'polling'],
+    //             "query": "mobile=true",
+    //             extraHeaders: {
+    //                 "ngrok-skip-browser-warning": true
+    //             }
+    //         });
 
-            // setErrorText(JSON.stringify(soc));
-            setSocket(soc);
+    //         // setErrorText(JSON.stringify(soc));
+    //         setSocket(soc);
 
-            soc.on("connect", () => {
-                console.log('Cliente Conectado');
-                console.log(soc.id);
-                setEnableCon(true); setConStat('Connected');
-                soc.emit('currentBoard', {
-                    status: value.data().status
-                });
-            });
+    //         soc.on("connect", () => {
+    //             console.log('Cliente Conectado');
+    //             console.log(soc.id);
+    //             setEnableCon(true); setConStat('Connected');
+    //             soc.emit('currentBoard', {
+    //                 status: value.data().status
+    //             });
+    //         });
 
-            soc.on("connect_error", (err) => {
-                console.log(`connect_error due to ${err}`);
-                soc.disconnect();
-                notify('🚫 Fail'); setConStat('Fail'); setEnableCon(false);
-                setSocket(null);
-            });
+    //         soc.on("connect_error", (err) => {
+    //             console.log(`connect_error due to ${err}`);
+    //             soc.disconnect();
+    //             notify('🚫 Fail'); setConStat('Fail'); setEnableCon(false);
+    //             setSocket(null);
+    //         });
 
-        } catch (err) {
-            notify('⚠️ Fatal Error: Refreshing');
-            router.reload(window.location.pathname)
-        }
-    }
+    //     } catch (err) {
+    //         notify('⚠️ Fatal Error: Refreshing');
+    //         router.reload(window.location.pathname)
+    //     }
+    // }
 
     /*
     handleDisconnect -> disconnect client from lgrig
     */
-    const handleDisconnect = async () => {
-        if (socket) {
-            socket.emit('quit');
-            socket.disconnect();
-            socket = null;
-            setConStat('Disconnected'); setEnableCon(false);
-        }
-    }
+    // const handleDisconnect = async () => {
+    //     if (socket) {
+    //         socket.emit('quit');
+    //         socket.disconnect();
+    //         // socket = null;
+    //         setConStat('Disconnected'); setEnableCon(false);
+    //     }
+    // }
 
     /*
     sendInstruction -> send instruction to lgrig via WebSockets
@@ -523,21 +524,20 @@ function DisplayChess() {
                 {loading && <TailSpin type="Puff" color="#808080" height="100%" width="100%" />}
 
                 <VStack mr={5}>
-                    {valueVote && userDoc && value &&
+                    {/* {valueVote && userDoc && value &&
                         <Flex
                             align={['center']}
                             justify={['left']}
                             direction={['row']}
                         >
-                            {/* <Text mr={1}> Liquid Galaxy: </Text>
-                            <Switch  size='lg' colorScheme='green' id='connected'  onChange={(data) => {handleConnect()}} /> */}
-                            <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
                             <Button m={1} size='sm' colorScheme={conStat == 'Connected' ? 'red' : 'green'} onClick={handleConnect}>LiquidGalaxy</Button>
                             {conStat == 'Connected' &&
                                 <IconButton m={1} colorScheme='red' size='sm' icon={<CloseIcon />} onClick={handleDisconnect} />
                             }
                         </Flex>
-                    }
+                    } */}
+
+                    <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
                     {/* LGRig Controller */}
                     <VStack display={{ base: (enabledCon ? 'flex' : 'none'), md: 'flex', lg: 'flex' }} align='center' justify='center'>
 
