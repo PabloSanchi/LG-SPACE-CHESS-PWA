@@ -1,0 +1,8 @@
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target" : {
+        "namespace": "android_app",
+        "package_name": "com.lg.space.chess.pwa",
+        "sha256_cert_fingerprints": ["43:DE:17:0B:8B:84:AE:18:13:77:73:58:BB:C4:FB:2E:5F:5A:33:89:2C:35:0C:2E:DE:D3:DB:2B:68:2B:9E:82"]
+    }
+}]
