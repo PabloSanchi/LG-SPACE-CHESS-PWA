@@ -68,11 +68,10 @@ const Header = (props) => {
         }
     );
 
-
-
     const notify = (text) => toast(text);
 
     const handleSignOut = () => {
+        handleDisconnect();
         router.push('/');
         logout();
     }

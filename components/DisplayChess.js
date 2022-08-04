@@ -499,7 +499,15 @@ function DisplayChess() {
                         <DrawerHeader borderBottomWidth='1px'>Game Settings</DrawerHeader>
                         <DrawerBody>
                             <Text fontSize='sm' fontWeight='semibold' mb={2}>Choose Oponent</Text>
-                            <RadioGroup onChange={setGamemode} value={gamemode}>
+                            <RadioGroup onChange={(val) => {
+                                    setGamemode(val); 
+                                    if(socket)
+                                        socket.emit('currentBoard', {
+                                        status: (val == 1 ? value.data().status : offlineGame.fen().split(' ')[0])
+                                    });
+                                }}
+                                value={gamemode}
+                            >
                                 <Flex direction='column' gap={4}>
                                     <Radio value={1}>Satellite</Radio>
                                     <Radio value={2}>AI</Radio>
