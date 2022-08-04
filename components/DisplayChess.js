@@ -255,6 +255,13 @@ function DisplayChess() {
         - AI move
     */
     async function onDropOffline(sourceSquare, targetSquare) {
+        
+        if(offlineGame.game_over()) {
+            if(socket) socket.emit('currentBoard', { status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]) });
+            setOfflineGame(new Chess());
+            setOfflineStatus(new Chess().fen().split(' ')[0]);
+            return false;
+        }
         // apply move
         let move = offlineGame.move({
             from: sourceSquare,
@@ -281,12 +288,20 @@ function DisplayChess() {
         setOfflineStatus(offlineGame.fen().split(' ')[0]);
         console.log(offlineGame.fen().split(' ')[0]);
         console.log(offlineStatus);
-
-        blackMove(offlineGame.fen().split(' ')[0]);
+        
+        blackMove();
         return true;
     }
 
-    async function blackMove(stats) {
+    async function blackMove() {
+
+        if(offlineGame.game_over()) {
+            if(socket) socket.emit('currentBoard', { status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]) });
+            setOfflineGame(new Chess());
+            setOfflineStatus(new Chess().fen().split(' ')[0]);
+            return false;
+        }
+
         // make AI move
         let response = new Game(offlineGame.fen());
         let move = response.aiMove(1);
@@ -311,6 +326,10 @@ function DisplayChess() {
                 });
             }
         }, 1000);
+
+        if(offlineGame.game_over()) {
+            setOfflineGame(new Chess());
+        }
 
 
         setOfflineStatus(offlineGame.fen().split(' ')[0]);
@@ -486,17 +505,16 @@ function DisplayChess() {
         )
     }
 
-
     function PlacementSetting({ disp, show, color }) {
         const { isOpen, onOpen, onClose } = useDisclosure()
 
         return (
             <>
-                <Button display={disp} disabled={show} mt={10} m={1} w={20} size='sm' colorScheme={color} onClick={onOpen} >Settings</Button>
+                <Button display={disp} disabled={show} mt={10} m={1} w={20} size='sm' colorScheme={color} onClick={onOpen} >Mode</Button>
                 <Drawer placement={'right'} onClose={onClose} isOpen={isOpen}>
                     <DrawerOverlay />
                     <DrawerContent>
-                        <DrawerHeader borderBottomWidth='1px'>Game Settings</DrawerHeader>
+                        <DrawerHeader borderBottomWidth='1px'>Game Mode</DrawerHeader>
                         <DrawerBody>
                             <Text fontSize='sm' fontWeight='semibold' mb={2}>Choose Oponent</Text>
                             <RadioGroup onChange={(val) => {
@@ -549,7 +567,7 @@ function DisplayChess() {
                     {/* LGRig Controller */}
                     <VStack display={{ base: (enabledCon ? 'flex' : 'none'), md: 'flex', lg: 'flex' }} align='center' justify='center'>
 
-                        { /* Settings and demo */}
+                        { /* gamemode and demo */}
                         <HStack>
                             <PlacementSetting disp={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} color='orange' />
                             <DrawerDemo disp={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} color='orange' />
@@ -612,10 +630,10 @@ function DisplayChess() {
                 {/* Data & Board*/}
                 <Box align="center" mb={3}>
                     <HStack>
-                        {userDoc && <Badge m={1} colorScheme='purple'> IP: {userDoc.data()?.lqrigip}</Badge>}
-                        {value && <Badge m={1} colorScheme={value.data()?.turn == 'w' ? "blue" : "yellow"}>
-                            Turn: {value.data()?.turn == 'w' ? "Earth" : "Satellite"}</Badge>}
-                        {userDoc && <Badge mt={3} colorScheme='teal'>Attempts: {userDoc.data()?.limit}</Badge>}
+                        {userDoc && <Badge m={1} colorScheme='none' > IP: {userDoc.data()?.lqrigip}</Badge>}
+                        {value && <Badge m={1} colorScheme='none'>
+                            Turn: {value.data()?.turn == 'w' ? "You" : "Satellite"}</Badge>}
+                        {userDoc && <Badge mt={3} colorScheme='none' >Attempts: {userDoc.data()?.limit}</Badge>}
                     </HStack>
 
                     {userDoc && value &&
@@ -629,14 +647,7 @@ function DisplayChess() {
                             customBoardStyle={{ borderRadius: '10px', boxShadow: '0 5px 15px rgba(0, 0, 0, 0.5 ' }}
                         />
                     }
-                    {/* {userDoc && value &&
-                        <Text mt={3} >Connection Status: {conStat}
-                            <Button backgroundColor='white' m={1} w={3} h={3} isLoading={(conStat == 'Loading...')}>
-                            </Button>
-                        </Text>
-                    } */}
                 </Box>
-
 
                 {/* right joystick only for large view */}
                 {conStat == 'Connected' &&
