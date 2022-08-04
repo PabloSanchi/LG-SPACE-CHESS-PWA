@@ -404,7 +404,7 @@ function DisplayChess() {
                             direction={['row']}
                         >
                             {/* <Tag m={1} size='sm' w={100} variant='solid' colorScheme='teal' >Attempts: {userDoc.data()?.limit}</Tag> */}
-                            <Badge m={1} size='sm' h={5} w={100} variant='solid' colorScheme='teal'>Attempts: {userDoc.data()?.limit}</Badge>
+                            <Badge m={1} size='sm' h={5} w={85} variant='solid' colorScheme='teal'>Attempts: {userDoc.data()?.limit}</Badge>
                             <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
                             <Button m={1} size='sm' colorScheme={conStat == 'Connected' ? 'green' : 'red'} onClick={handleConnect}>LiquidGalaxy</Button>
                             {conStat == 'Connected' &&
