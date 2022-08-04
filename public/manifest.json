@@ -2,7 +2,7 @@
     "theme_color": "#DAA520",
     "background_color": "#FFFFFF",
     "display": "standalone",
-    "scope": "/",
+    "scope": "https://lg-space-chess-pwa.vercel.app/",
     "start_url": "/",
     "name": "Space Chess",
     "short_name": "LGSPC",
