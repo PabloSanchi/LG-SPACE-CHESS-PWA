@@ -23,15 +23,10 @@ import ReactNipple from 'react-nipple';
 import { MdOutlineCenterFocusWeak } from 'react-icons/md'
 import { CloseIcon } from '@chakra-ui/icons';
 
-import {
-    Drawer,
-    DrawerBody,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerOverlay,
-    DrawerContent,
-    DrawerCloseButton,
-} from '@chakra-ui/react'
+import { Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, } from '@chakra-ui/react'
+import { Switch } from '@chakra-ui/react'
+
+import requests from '../utils/requests';
 
 function DisplayChess() {
 
@@ -119,6 +114,11 @@ function DisplayChess() {
     handleConnect -> connect client with lgrig via WebSockets
     */
     const handleConnect = async () => {
+        if(conStat == 'Connected') {
+            handleDisconnect();
+            return;
+        }
+
         console.log('IP: ' + userDoc.data()?.lqrigip);
         setConStat('Loading...');
 
@@ -356,8 +356,7 @@ function DisplayChess() {
                         <DrawerHeader>Top 10 Plays</DrawerHeader>
 
                         <DrawerBody>
-                            
-                            {plays.map((num) => {
+                            { Object.keys(requests).map((num) => {
                                 return <Text key={num} padding={5} backgroundColor='gray.50' mb={1} borderRadius={10} fontWeight='semibold'
                                 _hover={{
                                     transform: 'scale(0.95)',
@@ -366,7 +365,7 @@ function DisplayChess() {
                                 }}
                                 onClick={() => {notify('not defined'); onClose()} }
                             >
-                                {`Play ${num}`}
+                                {`${num}`}
                             </Text>
                             }) }
  
@@ -403,13 +402,13 @@ function DisplayChess() {
                             justify={['left']}
                             direction={['row']}
                         >
-                            {/* <Tag m={1} size='sm' w={100} variant='solid' colorScheme='teal' >Attempts: {userDoc.data()?.limit}</Tag> */}
-                            <Badge m={1} size='sm' h={5} w={85} variant='solid' colorScheme='teal'>Attempts: {userDoc.data()?.limit}</Badge>
+                            {/* <Button m={1} size='sm' colorScheme={conStat == 'Connected' ? 'green' : 'red'} onClick={handleConnect}>LiquidGalaxy {conStat == 'Connected' ? 'X': '' }</Button> */}
+                            <Text mr={1}> Liquid Galaxy: </Text>
+                            <Switch  size='lg' colorScheme='green' id='connected'  onChange={(data) => {handleConnect()}} />
                             <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
-                            <Button m={1} size='sm' colorScheme={conStat == 'Connected' ? 'green' : 'red'} onClick={handleConnect}>LiquidGalaxy</Button>
-                            {conStat == 'Connected' &&
+                            {/* {conStat == 'Connected' &&
                                 <IconButton m={1} colorScheme='red' size='sm' icon={<CloseIcon />} onClick={handleDisconnect} />
-                            }
+                            } */}
                         </Flex>
                     }
                     {/* LGRig Controller */}
@@ -471,11 +470,12 @@ function DisplayChess() {
 
                 </VStack>
 
-                <Box align="center">
+                <Box align="center" mb={3}>
                     <HStack>
-                        {userDoc && <Badge m={1} colorScheme='purple'> LGRig IP: {userDoc.data()?.lqrigip}</Badge>}
+                        {userDoc && <Badge m={1} colorScheme='purple'> IP: {userDoc.data()?.lqrigip}</Badge>}
                         {value && <Badge m={1} colorScheme={value.data()?.turn == 'w' ? "blue" : "yellow"}>
                             Turn: {value.data()?.turn == 'w' ? "Earth" : "Satellite"}</Badge>}
+                            {userDoc && <Badge mt={3} colorScheme='teal'>Attempts: {userDoc.data()?.limit}</Badge>}
                     </HStack>
 
                     {userDoc && value &&
@@ -489,12 +489,12 @@ function DisplayChess() {
                             customBoardStyle={{ borderRadius: '10px', boxShadow: '0 5px 15px rgba(0, 0, 0, 0.5 ' }}
                         />
                     }
-                    {userDoc && value &&
+                    {/* {userDoc && value &&
                         <Text mt={3} >Connection Status: {conStat}
                             <Button backgroundColor='white' m={1} w={3} h={3} isLoading={(conStat == 'Loading...')}>
                             </Button>
                         </Text>
-                    }
+                    } */}
                 </Box>
 
                 {conStat == 'Connected' &&
