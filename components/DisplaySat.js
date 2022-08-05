@@ -109,7 +109,7 @@ function DisplaySat() {
             {true &&
                 // <Flex display="fix" justify="center">
                 <Flex>
-                    <Button position="absolute" zIndex="popover" right="0.5" ml={2} colorScheme="blue" onClick={() => setFollow(!follow)}>{!follow ? 'Track' : 'Untrack'}</Button>
+                    <Button position="absolute" zIndex="popover" right="1" mt={1} ml={2} colorScheme="blue" onClick={() => setFollow(!follow)}>{!follow ? 'Track' : 'Untrack'}</Button>
                     <Map provider={mapTiler}
                         dprs={[1, 2]}
                         height={window.innerHeight - 130}

@@ -7,11 +7,11 @@ import {
     ModalBody, FormControl,
     FormLabel, Input,
     ModalFooter, useDisclosure,
-    HStack, VStack
+    HStack, VStack, useColorMode, useColorModeValue
 } from '@chakra-ui/react';
 
-import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
-import { Button } from '@chakra-ui/react'
+import { CloseIcon, HamburgerIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { Button, IconButton } from '@chakra-ui/react'
 import toast, { Toaster } from 'react-hot-toast';
 import { auth, logout, db } from "../firebase";
 import { collection, updateDoc, doc, getDoc } from "firebase/firestore";
@@ -20,29 +20,23 @@ import { useRouter } from 'next/router';
 import { isIPV4Address } from "ip-address-validator";
 import Link from "next/link";
 
-import { FaHome } from 'react-icons/fa';
 import { MdSpaceDashboard } from 'react-icons/md'
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 import { setGlobalState, useGlobalState } from '../components/socketState';
 import { io } from "socket.io-client";
-// import { hookstate, useHookstate, State } from '@hookstate/core';
-
-// // internal variables
-// const globalState = hookstate(0);
-// const wrapState = () => ({
-//     get: () => s.value,
-//     increment: () => s.set(p => p + 1)
-// });
-
-// // The following 2 functions can be exported now:
-// export const accessGlobalState = () => wrapState(globalState)
-// export const useGlobalState = () => wrapState(useHookstate(globalState))
-
 
 const Header = (props) => {
 
     // we do not use useState so it wont refresh the page (it will quit the modal!)
     var lqIp = "";
+    // color Mode
+    const { toggleColorMode } = useColorMode();
+    // #DAA520
+    // const bgColor = useColorModeValue('orange', 'orange');
+    const bgColor = useColorModeValue('orange', 'dark');
+    const themeLogo = useColorModeValue(<MoonIcon />, <SunIcon />);
+    const ButtonBg = useColorModeValue('white', 'orange.300');
+    const mainBtn = useColorModeValue('blue', 'white');
 
     const router = useRouter();
     const [user, loadingUser] = useAuthState(auth);
@@ -210,7 +204,8 @@ const Header = (props) => {
     return (
         <Flex
             color='white'
-            bgGradient='linear(to-r, #CD853F, #DAA520)'
+            bgColor={bgColor}
+            // bgGradient='linear(to-r, #CD853F, #DAA520)'
             mb={1}
             p={8}
             as="nav"
@@ -254,11 +249,14 @@ const Header = (props) => {
                     direction={['column', 'row', 'row', 'row']}
                     pt={[4, 4, 0, 0]}
                 >
-
-                    <CustomButton mbVal={2} mrVal={3} foo={() => { router.push('/about') }} name="About" />
-                    <CustomButton mbVal={2} mrVal={3} foo={() => { router.push('/findsat') }} name="FindSat" />
-                    <CustomButton mbVal={2} mrVal={3} foo={onOpen} name="LGSettings" />
-                    <CustomButton mbVal={0} mrVal={0} foo={handleSignOut} name="SignOut" />
+                    <Box borderRadius={10} p={2} bgColor={bgColor} _hover = {{cursor: 'pointer'}} onClick={toggleColorMode} mb={{ base: 2, sm: 0 }} 
+                        mr={{ base: 0, sm: 5 }}>
+                        {themeLogo}
+                    </Box>
+                    <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={() => { router.push('/about') }} name="About" />
+                    <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={() => { router.push('/findsat') }} name="FindSat" />
+                    <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={onOpen} name="LGSettings" />
+                    <CustomButton bgColor={ButtonBg} mbVal={0} mrVal={0} foo={handleSignOut} name="SignOut" />
                 </Flex>
             </Box>
 
@@ -267,15 +265,14 @@ const Header = (props) => {
     );
 };
 
-function CustomButton({ mbVal, mrVal, foo, name }) {
+function CustomButton({ mainBtn, bgColor, mbVal, mrVal, foo, name }) {
     return (
         <Button
-            color="orange.800"
-            backgroundColor="white"
+            color={bgColor == "white" ? "orange.800" : "white"}
+            backgroundColor={bgColor}
             width="100%"
             mb={{ base: mbVal, sm: 0 }}
             mr={{ base: 0, sm: mrVal }}
-
             onClick={foo}
         >{name}
         </Button>

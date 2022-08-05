@@ -23,7 +23,7 @@ import { MdOutlineCenterFocusWeak } from 'react-icons/md'
 import { CloseIcon } from '@chakra-ui/icons';
 
 import { Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, } from '@chakra-ui/react';
-import { Switch, RadioGroup, Radio } from '@chakra-ui/react';
+import { Switch, RadioGroup, Radio, useColorModeValue } from '@chakra-ui/react';
 
 import requests from '../utils/requests';
 import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine';
@@ -40,19 +40,15 @@ function DisplayChess() {
 
 
     // VARIABLE DECLARATIONS
+    const bgColor = useColorModeValue('gray.50', 'whiteAlpha.50');
     // socket and status
     let soc = 'null';
-    // const [socket, setSocket] = useState(null);
     const [socket] = useGlobalState('socket');
     const setSocket = (soc) => {
         setGlobalState('socket', soc);
     }
-
     const [conStat, setConStat] = useState('Disconnected');
     const [enabledCon, setEnableCon] = useState(false);
-    const [urlSoc, setUrlSoc] = useState('');
-    // navigation
-    const router = useRouter();
     // game mode
     const [gamemode, setGamemode] = useState(1);
     const [offlineGame, setOfflineGame] = useState(new Chess())
@@ -98,8 +94,6 @@ function DisplayChess() {
     // notifications
     const notify = (text) => toast(text);
 
-
-
     useEffect(() => {
         if (socket !== null) {
             setEnableCon(true); setConStat('Connected');
@@ -140,74 +134,6 @@ function DisplayChess() {
         }
     }, [value?.data()?.status]);
 
-    /*
-    handleConnect -> connect client with lgrig via WebSockets
-    */
-    // const handleConnect = async () => {
-    //     if (conStat == 'Connected') {
-    //         handleDisconnect();
-    //         return;
-    //     }
-
-    //     console.log('IP: ' + userDoc.data()?.lqrigip);
-    //     setConStat('Loading...');
-
-    //     try {
-    //         var ipAux = urlSoc;
-    //         if (urlSoc == '' && userDoc.data()?.lqrigip != '') {
-    //             const docRef = doc(db, 'rig', userDoc.data()?.lqrigip);
-    //             const docSnap = await getDoc(docRef);
-    //             if (docSnap.exists()) ipAux = docSnap.data()?.ip ?? urlSoc;
-    //         }
-
-    //         console.log('Connecting to: ', ipAux);
-
-    //         soc = io(ipAux, {
-    //             'reconnect': false,
-    //             'connect_timeout': 2000,
-    //             'transports': ['websocket', 'polling'],
-    //             "query": "mobile=true",
-    //             extraHeaders: {
-    //                 "ngrok-skip-browser-warning": true
-    //             }
-    //         });
-
-    //         // setErrorText(JSON.stringify(soc));
-    //         setSocket(soc);
-
-    //         soc.on("connect", () => {
-    //             console.log('Cliente Conectado');
-    //             console.log(soc.id);
-    //             setEnableCon(true); setConStat('Connected');
-    //             soc.emit('currentBoard', {
-    //                 status: value.data().status
-    //             });
-    //         });
-
-    //         soc.on("connect_error", (err) => {
-    //             console.log(`connect_error due to ${err}`);
-    //             soc.disconnect();
-    //             notify('🚫 Fail'); setConStat('Fail'); setEnableCon(false);
-    //             setSocket(null);
-    //         });
-
-    //     } catch (err) {
-    //         notify('⚠️ Fatal Error: Refreshing');
-    //         router.reload(window.location.pathname)
-    //     }
-    // }
-
-    /*
-    handleDisconnect -> disconnect client from lgrig
-    */
-    // const handleDisconnect = async () => {
-    //     if (socket) {
-    //         socket.emit('quit');
-    //         socket.disconnect();
-    //         // socket = null;
-    //         setConStat('Disconnected'); setEnableCon(false);
-    //     }
-    // }
 
     /*
     sendInstruction -> send instruction to lgrig via WebSockets
@@ -256,12 +182,14 @@ function DisplayChess() {
     */
     async function onDropOffline(sourceSquare, targetSquare) {
         
+        // if the user lost
         if(offlineGame.game_over()) {
             if(socket) socket.emit('currentBoard', { status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]) });
             setOfflineGame(new Chess());
             setOfflineStatus(new Chess().fen().split(' ')[0]);
-            return false;
+            return true;
         }
+
         // apply move
         let move = offlineGame.move({
             from: sourceSquare,
@@ -294,12 +222,12 @@ function DisplayChess() {
     }
 
     async function blackMove() {
-
+        // if AI loses the game
         if(offlineGame.game_over()) {
             if(socket) socket.emit('currentBoard', { status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]) });
             setOfflineGame(new Chess());
             setOfflineStatus(new Chess().fen().split(' ')[0]);
-            return false;
+            return true;
         }
 
         // make AI move
@@ -479,7 +407,7 @@ function DisplayChess() {
 
                         <DrawerBody>
                             {Object.keys(requests).map((num) => {
-                                return <Text key={num} padding={5} backgroundColor='gray.50' mb={1} borderRadius={10} fontWeight='semibold'
+                                return <Text key={num} padding={5} backgroundColor={bgColor} mb={1} borderRadius={10} fontWeight='semibold'
                                     _hover={{
                                         transform: 'scale(0.95)',
                                         cursor: 'pointer',
@@ -490,8 +418,6 @@ function DisplayChess() {
                                     {`${num}`}
                                 </Text>
                             })}
-
-
                         </DrawerBody>
 
                         <DrawerFooter>
@@ -550,19 +476,6 @@ function DisplayChess() {
                 {loading && <TailSpin type="Puff" color="#808080" height="100%" width="100%" />}
 
                 <VStack mr={5}>
-                    {/* {valueVote && userDoc && value &&
-                        <Flex
-                            align={['center']}
-                            justify={['left']}
-                            direction={['row']}
-                        >
-                            <Button m={1} size='sm' colorScheme={conStat == 'Connected' ? 'red' : 'green'} onClick={handleConnect}>LiquidGalaxy</Button>
-                            {conStat == 'Connected' &&
-                                <IconButton m={1} colorScheme='red' size='sm' icon={<CloseIcon />} onClick={handleDisconnect} />
-                            }
-                        </Flex>
-                    } */}
-
                     <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
                     {/* LGRig Controller */}
                     <VStack display={{ base: (enabledCon ? 'flex' : 'none'), md: 'flex', lg: 'flex' }} align='center' justify='center'>

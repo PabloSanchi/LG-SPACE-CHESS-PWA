@@ -3,10 +3,16 @@ import { signInWithGoogle, auth, logout } from "../firebase";
 import Image from 'next/image';
 import { FcGoogle } from 'react-icons/fc';
 import { Box, Stack, Heading, Text, Container, Button, SimpleGrid, Center } from '@chakra-ui/react';
-import Spl from '../public/Spl.png';
+import Spl from '../public/Spl2.png';
+import Spl2 from '../public/Spl3.png';
 import Head from 'next/head';
+import { useColorMode, useColorModeValue } from '@chakra-ui/react';
 
 export default function Login() {
+
+    const mainLogo = useColorModeValue(Spl,Spl2);
+    const bgColor = useColorModeValue('gray.50', 'whiteAlpha.50');
+    const color = useColorModeValue('gray.500', 'white');
 
     const handleLogin = () => {
         signInWithGoogle()
@@ -41,17 +47,17 @@ export default function Login() {
 
                     </Heading>
                     
-                    <Image viewBox="5 0 100 100" src={Spl} alt="main logo"></Image>
+                    <Image viewBox="5 0 100 100" src={mainLogo} alt="main logo"></Image>
                 </Stack>
                 <Stack
-                    bg={'gray.50'}
+                    bg={bgColor}
                     rounded={'xl'}
                     p={{ base: 4, sm: 6, md: 8 }}
                     spacing={{ base: 8 }}
                     maxW={{ lg: 'lg' }}>
                     <Stack spacing={4}>
                         <Heading
-                            color={'gray.800'}
+                            color={'gray.200'}
                             lineHeight={1.1}
                             fontSize={{ base: '2xl', sm: '3xl', md: '4xl' }}>
                             Join the chess community
@@ -62,7 +68,7 @@ export default function Login() {
                                 !
                             </Text>
                         </Heading>
-                        <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }}>
+                        <Text color={color} fontSize={{ base: 'sm', sm: 'md' }}>
                             This is the new way to play chess, but now, as a community.
                             Do not hesitate and share it on social media!!!
                         </Text>

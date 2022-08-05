@@ -15,7 +15,6 @@ class MyDocument extends Document {
                     <meta content='yes' name='mobile-web-app-capable'/>
                 </Head>
                 <body>
-                    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
                     <Main />
                     <NextScript />
                 </body>
