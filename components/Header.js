@@ -186,13 +186,17 @@ const Header = (props) => {
                             <Input placeholder='192.168.0.1' onChange={(e) => lqIp = e.target.value} />
                         </FormControl>
 
+                        <FormControl>
+                            <FormLabel>Hide Logos</FormLabel>
+                            <Button onClick={hideLogos}>Hide/Show</Button>
+                        </FormControl>
+                            
                     </ModalBody>
 
                     <ModalFooter>
                         <VStack>
                             <HStack>
 
-                                <Button onClick={hideLogos}>Hide/Show</Button>
                                 <Button colorScheme={socket == null ? 'green' : 'red'} onClick={handleConnect} >
                                     {socket != null ? 'Disconnect' : 'Connect'}
                                 </Button>
