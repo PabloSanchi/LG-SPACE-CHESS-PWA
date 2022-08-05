@@ -191,6 +191,15 @@ const Header = (props) => {
                             <Button onClick={hideLogos}>Hide/Show</Button>
                         </FormControl>
                             
+                        <FormControl>
+                            <FormLabel>Hide Logos</FormLabel>
+                            <Button onClick={() => {}}>Reboot</Button>
+                        </FormControl>
+
+                        <FormControl>
+                            <FormLabel>Hide Logos</FormLabel>
+                            <Button onClick={() => {}}>Poweroff</Button>
+                        </FormControl>
                     </ModalBody>
 
                     <ModalFooter>
