@@ -162,6 +162,12 @@ const Header = (props) => {
         }
     }
 
+    const hideLogos = () => {
+        if(socket) {
+            socket.emit('hideLogos');
+        }
+    }
+
     const GetModal = () => {
         return (
             <Modal
@@ -185,6 +191,8 @@ const Header = (props) => {
                     <ModalFooter>
                         <VStack>
                             <HStack>
+
+                                <Button onClick={hideLogos}>Hide/Show</Button>
                                 <Button colorScheme={socket == null ? 'green' : 'red'} onClick={handleConnect} >
                                     {socket != null ? 'Disconnect' : 'Connect'}
                                 </Button>
