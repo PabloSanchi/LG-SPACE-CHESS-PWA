@@ -7,6 +7,7 @@ import LQlogo from '../public/logoLg2.png';
 import Gsoc from '../public/logoGsoc.png';
 import Spl from '../public/Spl2.png';
 import Spl2 from '../public/Spl3.png';
+import logos from '../public/logos.png';
 
 import { useColorModeValue } from '@chakra-ui/react';
 import { setGlobalState, useGlobalState } from '../components/socketState';
@@ -38,7 +39,7 @@ function AboutBody() {
             <Divider w={120} orientation='horizontal' />
             {/* Author contact */}
             <Text fontSize='xl' >Author Contact info:</Text>
-            <Box display={{ base: 'block', md: 'block' }} flexBasis={{ base: '100%', md: 'auto' }} >
+            <Box display={{ base: 'block', md: 'block' }} flexBasis={{ base: '100%', md: 'auto' }} mb={5} >
                 <Flex
                     align="center"
                     justify={['center', 'space-between', 'flex-end', 'flex-end']}
@@ -53,10 +54,13 @@ function AboutBody() {
             </Box>
 
             {/* Logos */}
-            <HStack maxW={'lg'} p={10} >
+            <Box mt={3}>
+                <Image width={764} height={758} src={logos} alt="main logo"></Image>
+            </Box>
+            {/* <HStack maxW={'lg'} p={10} >
                 <Image p={20} src={LQlogo} alt="lq logo"></Image>
                 <Image p={20} src={Gsoc} alt="main gsoc"></Image>
-            </HStack>
+            </HStack> */}
 
             {/* Project Description */}
             <Text maxW={'3xl'} p={5} >

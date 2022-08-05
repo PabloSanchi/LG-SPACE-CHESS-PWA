@@ -11,7 +11,7 @@ import {
     useMediaQuery, useDisclosure, Link
 } from '@chakra-ui/react';
 
-import { IconButton, Box, Progress, HStack, Button, Text, Flex, VStack, Icon, Badge, Center } from '@chakra-ui/react';
+import { Stack, Box, Progress, HStack, Button, Text, Flex, VStack, Icon, Badge, Center } from '@chakra-ui/react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db, doc } from "../firebase";
 import { collection, updateDoc, setDoc, getDoc } from "firebase/firestore";
@@ -181,10 +181,10 @@ function DisplayChess() {
         - AI move
     */
     async function onDropOffline(sourceSquare, targetSquare) {
-        
+
         // if the user lost
-        if(offlineGame.game_over()) {
-            if(socket) socket.emit('currentBoard', { status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]) });
+        if (offlineGame.game_over()) {
+            if (socket) socket.emit('currentBoard', { status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]) });
             setOfflineGame(new Chess());
             setOfflineStatus(new Chess().fen().split(' ')[0]);
             return true;
@@ -216,15 +216,15 @@ function DisplayChess() {
         setOfflineStatus(offlineGame.fen().split(' ')[0]);
         console.log(offlineGame.fen().split(' ')[0]);
         console.log(offlineStatus);
-        
+
         blackMove();
         return true;
     }
 
     async function blackMove() {
         // if AI loses the game
-        if(offlineGame.game_over()) {
-            if(socket) socket.emit('currentBoard', { status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]) });
+        if (offlineGame.game_over()) {
+            if (socket) socket.emit('currentBoard', { status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]) });
             setOfflineGame(new Chess());
             setOfflineStatus(new Chess().fen().split(' ')[0]);
             return true;
@@ -255,7 +255,7 @@ function DisplayChess() {
             }
         }, 1000);
 
-        if(offlineGame.game_over()) {
+        if (offlineGame.game_over()) {
             setOfflineGame(new Chess());
         }
 
@@ -444,19 +444,19 @@ function DisplayChess() {
                         <DrawerBody>
                             <Text fontSize='sm' fontWeight='semibold' mb={2}>Choose Oponent</Text>
                             <RadioGroup onChange={(val) => {
-                                    setGamemode(val); 
+                                    setGamemode(parseInt(val));
                                     if(socket)
                                         socket.emit('currentBoard', {
                                         status: (val == 1 ? value.data().status : offlineGame.fen().split(' ')[0])
                                     });
                                 }}
-                                value={gamemode}
+                                value={gamemode.toString()}
                             >
-                                <Flex direction='column' gap={4}>
-                                    <Radio value={1}>Satellite</Radio>
-                                    <Radio value={2}>AI</Radio>
-                                    <Radio value={3}>Online</Radio>
-                                </Flex>
+                                <Stack direction='column' gap={4}>
+                                    <Radio value='1'>Satellite</Radio>
+                                    <Radio value='2'>AI</Radio>
+                                    <Radio value='3'>Online</Radio>
+                                </Stack>
                             </RadioGroup>
                         </DrawerBody>
                     </DrawerContent>
