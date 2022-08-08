@@ -162,17 +162,27 @@ const Header = (props) => {
         }
     }
 
+    /*
+    hideLogos -> hide logos from the screen
+    */
     const hideLogos = () => {
         if (socket) {
             socket.emit('hideLogos');
         }
     }
 
+    /*
+    poweroff -> poweroff the rig
+    */
     const poweroff = () => {
         if (socket) {
             socket.emit('poweroff');
         }
     }
+
+    /*
+    reboot -> reboot the rig
+    */
     const reboot = () => {
         if (socket) {
             socket.emit('reboot');
@@ -226,7 +236,7 @@ const Header = (props) => {
                                     {socket != null ? 'Disconnect' : 'Connect'}
                                 </Button>
 
-                                <Button onClick={onClose}>Cancel</Button>
+                                <Button onClick={onClose}>Close</Button>
                             </HStack>
                         </VStack>
                     </ModalFooter>
