@@ -477,7 +477,7 @@ function DisplayChess() {
                 <VStack mr={5}>
                     <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
                     {/* LGRig Controller */}
-                    { /* gamemode and demo */}
+                    {/* gamemode and demo */}
                         <HStack>
                             <PlacementSetting disp={enabledCon ? 'block' : { base: 'block', md: 'block', lg: 'block' }} color='orange' />
                             <DrawerDemo disp={enabledCon ? 'block' : { base: 'block', md: 'block', lg: 'block' }} color='orange' />

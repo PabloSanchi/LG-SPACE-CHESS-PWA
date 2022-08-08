@@ -122,10 +122,10 @@ const Header = (props) => {
                 }
             });
 
-            // setErrorText(JSON.stringify(soc));
-            setSocket(soc);
-
             soc.on("connect", () => {
+                // setErrorText(JSON.stringify(soc));
+                setSocket(soc);
+                notify('Connected');
                 console.log('Cliente Conectado');
                 console.log(soc.id);
 
@@ -268,7 +268,7 @@ const Header = (props) => {
                         <Flex align="center" gap={1}> LG SPACE CHESS</Flex>
                     </Text>
 
-                    <Text isTruncated >{user?.email ? 
+                    <Text>{user?.email ? 
                         (user.displayName.length > 17 ? 
                             user.displayName.substring(0,17) + '...' : 
                             user.displayName) 
