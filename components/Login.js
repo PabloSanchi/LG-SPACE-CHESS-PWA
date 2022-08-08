@@ -57,7 +57,7 @@ export default function Login() {
                     maxW={{ lg: 'lg' }}>
                     <Stack spacing={4}>
                         <Heading
-                            color={'gray.200'}
+                            color={useColorModeValue('dark', 'white')}
                             lineHeight={1.1}
                             fontSize={{ base: '2xl', sm: '3xl', md: '4xl' }}>
                             Join the chess community

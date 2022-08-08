@@ -455,7 +455,6 @@ function DisplayChess() {
                                 <Stack direction='column' gap={4}>
                                     <Radio value='1'>Satellite</Radio>
                                     <Radio value='2'>AI</Radio>
-                                    <Radio value='3'>Online</Radio>
                                 </Stack>
                             </RadioGroup>
                         </DrawerBody>
@@ -478,13 +477,14 @@ function DisplayChess() {
                 <VStack mr={5}>
                     <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
                     {/* LGRig Controller */}
+                    { /* gamemode and demo */}
+                        <HStack>
+                            <PlacementSetting disp={enabledCon ? 'block' : { base: 'block', md: 'block', lg: 'block' }} color='orange' />
+                            <DrawerDemo disp={enabledCon ? 'block' : { base: 'block', md: 'block', lg: 'block' }} color='orange' />
+                        </HStack>
+
                     <VStack display={{ base: (enabledCon ? 'flex' : 'none'), md: 'flex', lg: 'flex' }} align='center' justify='center'>
 
-                        { /* gamemode and demo */}
-                        <HStack>
-                            <PlacementSetting disp={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} color='orange' />
-                            <DrawerDemo disp={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} color='orange' />
-                        </HStack>
                         {/* View options */}
                         <HStack >
                             <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} size='sm' colorScheme='orange' onClick={() => sendInstruction('showChess')}>Chess</Button>

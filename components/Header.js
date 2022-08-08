@@ -94,7 +94,7 @@ const Header = (props) => {
     */
     const handleConnect = async () => {
 
-        console.log('connecting to lgrig');
+        
         console.log(socket);
         if (socket !== null) {
             handleDisconnect();
@@ -128,7 +128,7 @@ const Header = (props) => {
             soc.on("connect", () => {
                 console.log('Cliente Conectado');
                 console.log(soc.id);
-                
+
                 // soc.emit('currentBoard', {
                 //     status: value.data().status
                 // });
@@ -137,7 +137,7 @@ const Header = (props) => {
             soc.on("connect_error", (err) => {
                 console.log(`connect_error due to ${err}`);
                 soc.disconnect();
-                notify('🚫 Fail'); 
+                notify('🚫 Fail');
                 setSocket(null);
             });
 
@@ -163,8 +163,19 @@ const Header = (props) => {
     }
 
     const hideLogos = () => {
-        if(socket) {
+        if (socket) {
             socket.emit('hideLogos');
+        }
+    }
+
+    const poweroff = () => {
+        if (socket) {
+            socket.emit('poweroff');
+        }
+    }
+    const reboot = () => {
+        if (socket) {
+            socket.emit('reboot');
         }
     }
 
@@ -182,23 +193,28 @@ const Header = (props) => {
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <FormControl>
-                            <FormLabel>Enter LGRig IP</FormLabel>
-                            <Input placeholder='192.168.0.1' onChange={(e) => lqIp = e.target.value} />
+                            <FormLabel>LGRig IP</FormLabel>
+                            <HStack>
+                                <Input placeholder='192.168.0.1' onChange={(e) => lqIp = e.target.value} />
+                                <Button color="white" backgroundColor="orange.300" mr={3} onClick={handleSaveIp}>
+                                        Save
+                                </Button>
+                            </HStack>
                         </FormControl>
 
                         <FormControl>
                             <FormLabel>Hide Logos</FormLabel>
                             <Button onClick={hideLogos}>Hide/Show</Button>
                         </FormControl>
-                            
+
                         <FormControl>
-                            <FormLabel>Hide Logos</FormLabel>
-                            <Button onClick={() => {}}>Reboot</Button>
+                            <FormLabel>Reboot Rig</FormLabel>
+                            <Button colorScheme='yellow' onClick={reboot}>Reboot</Button>
                         </FormControl>
 
                         <FormControl>
-                            <FormLabel>Hide Logos</FormLabel>
-                            <Button onClick={() => {}}>Poweroff</Button>
+                            <FormLabel>Poweroff Rig</FormLabel>
+                            <Button colorScheme='red' onClick={poweroff}>Poweroff</Button>
                         </FormControl>
                     </ModalBody>
 
@@ -210,9 +226,6 @@ const Header = (props) => {
                                     {socket != null ? 'Disconnect' : 'Connect'}
                                 </Button>
 
-                                <Button color="white" backgroundColor="#CD853F" mr={3} onClick={handleSaveIp}>
-                                    Save
-                                </Button>
                                 <Button onClick={onClose}>Cancel</Button>
                             </HStack>
                         </VStack>
@@ -226,7 +239,6 @@ const Header = (props) => {
         <Flex
             color='white'
             bgColor={bgColor}
-            // bgGradient='linear(to-r, #CD853F, #DAA520)'
             mb={1}
             p={8}
             as="nav"
@@ -255,8 +267,25 @@ const Header = (props) => {
                     <Text fontSize="lg" fontWeight="bold" noOfLines={1} onClick={() => router.push('/')}>
                         <Flex align="center" gap={1}> LG SPACE CHESS</Flex>
                     </Text>
-                    <Text>{user?.email ? user.displayName : JSON.stringify(user)}</Text>
+
+                    <Text isTruncated >{user?.email ? 
+                        (user.displayName.length > 17 ? 
+                            user.displayName.substring(0,17) + '...' : 
+                            user.displayName) 
+                        : ' '}
+                    </Text>
                 </Box>
+                <Text
+                    textTransform={'uppercase'}
+                    color={socket != null ? 'green.400' : 'red.400'}
+                    fontWeight={600}
+                    fontSize={['sm', 'md', 'lg']}
+                    bg={useColorModeValue('white', 'blue.900')}
+                    p={2}
+                    alignSelf={'flex-start'}
+                    rounded={'lg'}>
+                    {socket != null ? 'ON' : 'OFF'}
+                </Text>
             </HStack>
 
             <Box display={{ base: 'block', md: 'none' }} onClick={toggleMenu}>
@@ -270,7 +299,7 @@ const Header = (props) => {
                     direction={['column', 'row', 'row', 'row']}
                     pt={[4, 4, 0, 0]}
                 >
-                    <Box borderRadius={10} p={2} bgColor={bgColor} _hover = {{cursor: 'pointer'}} onClick={toggleColorMode} mb={{ base: 2, sm: 0 }} 
+                    <Box borderRadius={10} p={2} bgColor={bgColor} _hover={{ cursor: 'pointer' }} onClick={toggleColorMode} mb={{ base: 2, sm: 0 }}
                         mr={{ base: 0, sm: 5 }}>
                         {themeLogo}
                     </Box>
