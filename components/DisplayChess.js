@@ -8,7 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import {
     Modal, ModalOverlay, ModalContent,
     ModalHeader, ModalCloseButton, ModalBody, ModalFooter,
-    useMediaQuery, useDisclosure, Link
+    useMediaQuery, useDisclosure, Link, IconButton
 } from '@chakra-ui/react';
 
 import { Stack, Box, Progress, HStack, Button, Text, Flex, VStack, Icon, Badge, Center } from '@chakra-ui/react';
@@ -20,6 +20,8 @@ import { useRouter } from 'next/router'
 import ReactNipple from 'react-nipple';
 
 import { MdOutlineCenterFocusWeak } from 'react-icons/md'
+import {TbPlayerPause, TbPlayerPlay, TbPlayerSkipBack, TbPlayerSkipForward, TbMultiplier1X, TbMultiplier05X, TbMultiplier2X} from 'react-icons/tb';
+
 import { CloseIcon } from '@chakra-ui/icons';
 
 import { Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, } from '@chakra-ui/react';
@@ -28,17 +30,12 @@ import { Switch, RadioGroup, Radio, useColorModeValue } from '@chakra-ui/react';
 import requests from '../utils/requests';
 import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine';
 
-
 import { State } from './Header';
-
 import { setGlobalState, useGlobalState } from '../components/socketState';
 
 
 
 function DisplayChess() {
-
-
-
     // VARIABLE DECLARATIONS
     const bgColor = useColorModeValue('gray.50', 'whiteAlpha.50');
     // socket and status
@@ -175,10 +172,13 @@ function DisplayChess() {
         }
     }
 
-    /*
-    onDropOffline -> set onDrop and AI move
+    /**
+    * onDropOffline -> set onDrop and AI move
         - move validation
         - AI move
+    * @param {String} sourceSquare 
+    * @param {String} targetSquare 
+    * @returns {boolean} true if the move is legal, false if ilegal
     */
     async function onDropOffline(sourceSquare, targetSquare) {
 
@@ -221,6 +221,10 @@ function DisplayChess() {
         return true;
     }
 
+    /**
+     * 
+     * @returns {boolean} true if the user lost
+     */
     async function blackMove() {
         // if AI loses the game
         if (offlineGame.game_over()) {
@@ -263,11 +267,14 @@ function DisplayChess() {
         setOfflineStatus(offlineGame.fen().split(' ')[0]);
     }
 
-    /* 
-    onDrop modification
+    /**
+    * onDrop modification
         we give some extra functions:
             - add move validation
             - save move in the database
+    * @param {String} sourceSquare 
+    * @param {String} targetSquare 
+    * @returns  {Boolean}  true if the move is legal, false if ilegal
     */
     async function onDrop(sourceSquare, targetSquare) {
 
@@ -318,7 +325,6 @@ function DisplayChess() {
                 move: (sourceSquare + ' ' + targetSquare)
             });
         }
-
 
         // legal move
         notify('✅ Success: ' + targetSquare);
@@ -387,6 +393,70 @@ function DisplayChess() {
     });
 
 
+    const setSpeed = (val) => {
+        if(socket) {
+            socket.emit('demoSpeed', {
+                speed: val
+            });
+        }
+    }
+
+
+    function DrawerPlayer({color}) {
+        const { isOpen, onOpen, onClose } = useDisclosure()
+        const [playing, setPlaying] = useState(true);
+        const btnRef = React.useRef()
+
+        return (
+            <>
+                <Button ref={btnRef} mt={10} m={1} w={20} size='sm' colorScheme={color} onClick={onOpen} >Player</Button>
+                <Drawer
+                    isOpen={isOpen}
+                    placement='bottom'
+                    onClose={onClose}
+                    finalFocusRef={btnRef}
+                >
+                    <DrawerOverlay />
+                    <DrawerContent>
+                        <DrawerCloseButton />
+                        <DrawerHeader>Demo Player</DrawerHeader>
+
+                        {/* TbPlayerPause, TbPlayerPlay, TbPlayerSkipBack, TbPlayerSkipForward, TbMultiplier1X, TbMultiplier05X, TbMultiplier2X */}
+
+                        <DrawerBody>
+                            <HStack gap={2}>
+                                <HStack>
+                                    <IconButton size="lg" onClick={() => {if(socket) socket.emit('demoBackward');}} icon={<TbPlayerSkipBack />}  />
+                                    
+                                    <IconButton size="lg" onClick={() => {
+                                            if(socket) {
+                                                socket.emit('playstop');
+                                                setPlaying(!playing);
+                                            }
+                                    }} icon={playing ? <TbPlayerPlay /> : <TbPlayerPause />}  />
+                                    
+                                    <IconButton size="lg" onClick={() => {if(socket) socket.emit('demoForward');}} icon={<TbPlayerSkipForward />}  />
+                                </HStack>
+                                
+                                <HStack>
+                                    <IconButton size="lg" onClick={() => setSpeed(1250)} icon={<TbMultiplier05X />}  />
+                                    <IconButton size="lg" onClick={() => setSpeed(700)} icon={<TbMultiplier1X />}  />
+                                    <IconButton size="lg" onClick={() => setSpeed(250)} icon={<TbMultiplier2X />}  />
+                                </HStack>
+                            </HStack>
+                        </DrawerBody>
+
+                        <DrawerFooter>
+                            <Button variant='outline' colorScheme='orange' mr={3} onClick={onClose}>
+                                Close
+                            </Button>
+                        </DrawerFooter>
+                    </DrawerContent>
+                </Drawer>
+            </>
+        )
+    }
+
     function DrawerDemo({ disp, show, color }) {
         const { isOpen, onOpen, onClose } = useDisclosure()
         const btnRef = React.useRef()
@@ -413,7 +483,14 @@ function DisplayChess() {
                                         cursor: 'pointer',
                                         transition: 'transform 0.2s ease-in-out'
                                     }}
-                                    onClick={() => { notify('▶️ ' + num); console.log(requests[num]); onClose() }}
+                                    onClick={() => { 
+                                        if(socket) {
+                                            notify('▶️ ' + num);
+                                            console.log(requests[num]); 
+                                            socket.emit('demoContent', requests[num])
+                                            onClose() 
+                                        }else notify('❌ Not Connected');
+                                    }}
                                 >
                                     {`${num}`}
                                 </Text>
@@ -475,13 +552,17 @@ function DisplayChess() {
                 {loading && <TailSpin type="Puff" color="#808080" height="100%" width="100%" />}
 
                 <VStack mr={5}>
-                    <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
+                    
+                    <HStack>
+                        <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
+                        <DrawerPlayer disp='block' color='orange' />
+                    </HStack>
                     {/* LGRig Controller */}
                     {/* gamemode and demo */}
-                        <HStack>
-                            <PlacementSetting disp={enabledCon ? 'block' : { base: 'block', md: 'block', lg: 'block' }} color='orange' />
-                            <DrawerDemo disp={enabledCon ? 'block' : { base: 'block', md: 'block', lg: 'block' }} color='orange' />
-                        </HStack>
+                    <HStack>
+                        <PlacementSetting disp='block' color='orange' />
+                        <DrawerDemo disp='block' color='orange' />
+                    </HStack>
 
                     <VStack display={{ base: (enabledCon ? 'flex' : 'none'), md: 'flex', lg: 'flex' }} align='center' justify='center'>
 
@@ -557,7 +638,7 @@ function DisplayChess() {
                             customDropSquareStyle={{ boxShadow: 'inset 0 0 1px 6px rgba(255,200,100,0.75)' }}
                             animationDuration={500}
                             customArrows={arrow === null || gamemode == 2 ? [] : [arrow]}
-                            customBoardStyle={{ borderRadius: '10px', boxShadow: '0 5px 15px rgba(0, 0, 0, 0.5 ' }}
+                            customBoardStyle={{ borderRadius: '5px'}}
                         />
                     }
                 </Box>
