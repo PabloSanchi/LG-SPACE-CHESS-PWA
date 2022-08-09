@@ -69,7 +69,7 @@ const Header = (props) => {
             snapshotListenOptions: { includeMetadataChanges: true },
         }
     );
-    
+
 
     const notify = (text) => toast(text);
 
@@ -138,9 +138,9 @@ const Header = (props) => {
                 console.log('Cliente Conectado');
                 console.log(soc.id);
 
-                soc.emit('currentBoard', {
-                    status: value.data().status
-                });
+                // soc.emit('currentBoard', {
+                //     status: value.data().status
+                // });
             });
 
             soc.on("connect_error", (err) => {

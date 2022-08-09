@@ -96,15 +96,22 @@ function DisplayChess() {
     useEffect(() => {
         if (socket !== null) {
             setEnableCon(true); setConStat('Connected');
-            
-            socket.emit('currentBoard', {
-                status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0])
-            });
-
         } else {
             setEnableCon(false); setConStat('Disconnected');
         }
     }, [socket]);
+
+    /**
+     * @description - useEffect to send the current chessboar status to the screens
+     */
+    useEffect(() => {
+        // gamemode == 1 ? value.data()?.status : offlineStatus
+        if(socket && value?.data()?.status !== undefined) {
+            socket.emit('currentBoard', {
+                status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0])
+            });
+        }
+    }, [socket, value?.data()?.status])
 
     // fetch arrows (last user vote)
     useEffect(() => {
@@ -216,7 +223,7 @@ function DisplayChess() {
     * @returns {boolean} true if the move is legal, false if ilegal
     */
     async function onDropOffline(sourceSquare, targetSquare) {
-        
+
         // apply move
         let move = offlineGame.move({
             from: sourceSquare,
