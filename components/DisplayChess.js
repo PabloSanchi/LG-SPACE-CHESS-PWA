@@ -91,11 +91,16 @@ function DisplayChess() {
     const [playing, setPlaying] = useState(false);
     // notifications
     const notify = (text) => toast(text);
-
+ 
     // check if connected to the screens
     useEffect(() => {
         if (socket !== null) {
             setEnableCon(true); setConStat('Connected');
+            
+            soc.emit('currentBoard', {
+                status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0])
+            });
+            
         } else {
             setEnableCon(false); setConStat('Disconnected');
         }
@@ -218,7 +223,7 @@ function DisplayChess() {
                 status: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
             });
         }
-        
+
         // apply move
         let move = offlineGame.move({
             from: sourceSquare,
