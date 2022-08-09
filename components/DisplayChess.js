@@ -15,15 +15,9 @@ import { Stack, Box, Progress, HStack, Button, Text, Flex, VStack, Icon, Badge, 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db, doc } from "../firebase";
 import { collection, updateDoc, setDoc, getDoc } from "firebase/firestore";
-import { io } from "socket.io-client";
-import { useRouter } from 'next/router'
 import ReactNipple from 'react-nipple';
 
 import { MdOutlineCenterFocusWeak } from 'react-icons/md'
-import {TbPlayerPause, TbPlayerPlay, TbPlayerSkipBack, TbPlayerSkipForward, TbMultiplier1X, TbMultiplier05X, TbMultiplier2X} from 'react-icons/tb';
-
-import { CloseIcon } from '@chakra-ui/icons';
-
 import { Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, } from '@chakra-ui/react';
 import { Switch, RadioGroup, Radio, useColorModeValue } from '@chakra-ui/react';
 
@@ -33,6 +27,10 @@ import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine';
 import { State } from './Header';
 import { setGlobalState, useGlobalState } from '../components/socketState';
 
+import { useRouter } from 'next/router'
+import { io } from "socket.io-client";
+import { TbPlayerPause, TbPlayerPlay, TbPlayerSkipBack, TbPlayerSkipForward, TbMultiplier1X, TbMultiplier05X, TbMultiplier2X } from 'react-icons/tb';
+import { CloseIcon } from '@chakra-ui/icons';
 
 
 function DisplayChess() {
@@ -47,6 +45,8 @@ function DisplayChess() {
     const [conStat, setConStat] = useState('Disconnected');
     const [enabledCon, setEnableCon] = useState(false);
     // game mode
+    let parseLetter = { 1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h' };
+    const [squareStyle, setSquareStyle] = useState({});
     const [gamemode, setGamemode] = useState(1);
     const [offlineGame, setOfflineGame] = useState(new Chess())
     const [offlineStatus, setOfflineStatus] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
@@ -87,10 +87,12 @@ function DisplayChess() {
             snapshotListenOptions: { includeMetadataChanges: true },
         }
     );
-
+    // demo info
+    const [playing, setPlaying] = useState(false);
     // notifications
     const notify = (text) => toast(text);
 
+    // check if connected to the screens
     useEffect(() => {
         if (socket !== null) {
             setEnableCon(true); setConStat('Connected');
@@ -98,7 +100,6 @@ function DisplayChess() {
             setEnableCon(false); setConStat('Disconnected');
         }
     }, [socket]);
-
 
     // fetch arrows (last user vote)
     useEffect(() => {
@@ -173,6 +174,35 @@ function DisplayChess() {
     }
 
     /**
+     * 
+     * @param {String} cad
+     * @param {Char} target
+     * @returns {String}
+     */
+    const getkingSquare = (cad, target) => {
+        let a = 1, b = 0;
+
+        for (let i = 0; i < cad.length; ++i) {
+            if (parseInt(cad[i])) {
+                b += parseInt(cad[i]);
+            } else if (cad[i] == '/') {
+                a++; b = 0;
+            } else b++;
+            
+            if (cad[i] == target) break;
+        }
+
+        return [parseLetter[b], 9 - a].join('')
+    }
+
+    const resetOfflineGame = () => {
+        setOfflineGame(new Chess());
+        setOfflineStatus(new Chess().fen().split(' ')[0]);
+        setSquareStyle({});
+        if (socket) socket.emit('currentBoard', { status: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'});
+    }
+    
+    /**
     * onDropOffline -> set onDrop and AI move
         - move validation
         - AI move
@@ -182,30 +212,26 @@ function DisplayChess() {
     */
     async function onDropOffline(sourceSquare, targetSquare) {
 
-        // if the user lost
-        if (offlineGame.game_over()) {
-            if (socket) socket.emit('currentBoard', { status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]) });
-            setOfflineGame(new Chess());
-            setOfflineStatus(new Chess().fen().split(' ')[0]);
-            return true;
-        }
-
         // apply move
         let move = offlineGame.move({
             from: sourceSquare,
             to: targetSquare,
             promotion: "q",
         });
+
         // check if move is legal
         if (move === null) {
-            notify('❌ Illegal Move: ' + targetSquare);
+            notify('❌ Illegal Move: ' + targetSquare); 
             return false;
         }
 
-        // console.log move
-        console.log(`${sourceSquare} -> ${targetSquare}`);
+        // higlight move (source and target square)
+        setSquareStyle({
+            [sourceSquare]: { backgroundColor: '#ffc107' },
+            [targetSquare]: { backgroundColor: '#ffc107' },
+        });
 
-
+        // send status to the screens if connected
         if (socket) {
             socket.emit('newStatus', {
                 status: '',
@@ -213,11 +239,25 @@ function DisplayChess() {
             });
         }
 
+        // update state
         setOfflineStatus(offlineGame.fen().split(' ')[0]);
-        console.log(offlineGame.fen().split(' ')[0]);
-        console.log(offlineStatus);
 
-        blackMove();
+        // if the game has ended via checkmate, stalemate, draw, threefold repetition, or insufficient material. 
+        // Otherwise, returns false.
+        if (offlineGame.game_over()) {
+            resetOfflineGame();
+            return true;
+        }
+
+        // if the AI is in check
+        if (offlineGame.in_check()) {
+            let sq1 = getkingSquare(offlineGame.fen().split(' ')[0], 'k');
+            console.log('K: ' + sq1);
+            setSquareStyle(current => ({ ...current, [sq1]: { backgroundColor: '#ff4444' } }));
+        }
+
+        setTimeout(() => blackMove(), 1000);
+
         return true;
     }
 
@@ -247,8 +287,11 @@ function DisplayChess() {
             promotion: "q",
         });
 
-        // console.log move AI
-        console.log(`AI Move: ${key} -> ${move[key]}`);
+        // higlight move (source and target square)
+        setSquareStyle({
+            [vote.split('_')[0]]: { backgroundColor: '#ffc107' },
+            [vote.split('_')[1]]: { backgroundColor: '#ffc107' },
+        });
 
         setTimeout(() => {
             if (socket) {
@@ -257,14 +300,23 @@ function DisplayChess() {
                     move: (vote.split('_')[0] + ' ' + vote.split('_')[1])
                 });
             }
-        }, 1000);
-
-        if (offlineGame.game_over()) {
-            setOfflineGame(new Chess());
-        }
-
+        }, 500);
 
         setOfflineStatus(offlineGame.fen().split(' ')[0]);
+
+        // if the game has ended via checkmate, stalemate, draw, threefold repetition, or insufficient material. 
+        // Otherwise, returns false.
+        if (offlineGame.game_over()) {
+            resetOfflineGame();
+            return true;
+        } else {
+            // if the player is in check 
+            if (offlineGame.in_check()) {
+                let sq1 = getkingSquare(offlineGame.fen().split(' ')[0], 'K');
+                console.log('K: ' + sq1);
+                setSquareStyle(current => ({ ...current, [sq1]: { backgroundColor: '#ff4444' } }));
+            }
+        }
     }
 
     /**
@@ -392,20 +444,27 @@ function DisplayChess() {
         }
     });
 
-
+    /**
+     * setSpeed -> send the speed to the rig
+     * @param {Number} val 
+     */
     const setSpeed = (val) => {
-        if(socket) {
+        if (socket) {
             socket.emit('demoSpeed', {
                 speed: val
             });
         }
     }
 
-
-    function DrawerPlayer({color}) {
+    /**
+     * 
+     * @param {Object} props { color }
+     * @returns Component (player for the demo)
+     */
+    function DrawerPlayer({ color }) {
         const { isOpen, onOpen, onClose } = useDisclosure()
-        const [playing, setPlaying] = useState(true);
         const btnRef = React.useRef()
+        const [pl, setPl] = useState(false);
 
         return (
             <>
@@ -424,26 +483,31 @@ function DisplayChess() {
                         {/* TbPlayerPause, TbPlayerPlay, TbPlayerSkipBack, TbPlayerSkipForward, TbMultiplier1X, TbMultiplier05X, TbMultiplier2X */}
 
                         <DrawerBody>
-                            <HStack gap={2}>
+                            <Flex align="center" justify='center' direction={['column', 'row', 'row']} gap={2}>
                                 <HStack>
-                                    <IconButton size="lg" onClick={() => {if(socket) socket.emit('demoBackward');}} icon={<TbPlayerSkipBack />}  />
-                                    
-                                    <IconButton size="lg" onClick={() => {
-                                            if(socket) {
-                                                socket.emit('playstop');
-                                                setPlaying(!playing);
-                                            }
-                                    }} icon={playing ? <TbPlayerPlay /> : <TbPlayerPause />}  />
-                                    
-                                    <IconButton size="lg" onClick={() => {if(socket) socket.emit('demoForward');}} icon={<TbPlayerSkipForward />}  />
+                                    {/* <IconButton size="sm" onClick={() => {if(socket) socket.emit('demoBackward');}} 
+                                    icon={<TbPlayerSkipBack size="lg" />}  /> */}
+                                    {/* <IconButton size="sm" onClick={() => {if(socket) socket.emit('demoForward');}} icon={<TbPlayerSkipForward size="md"/>}  /> */}
+
+                                    <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoBackward'); }}>{'<'}</Button>
+                                    <Button fontSize={30} size="md" onClick={() => {
+                                        if (socket) {
+                                            socket.emit('playstop');
+                                            setPlaying(!pl);
+                                        }
+                                    }}>{!pl ? '▷' : '||'}</Button>
+                                    <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoForward'); }}>{'>'}</Button>
                                 </HStack>
-                                
+
                                 <HStack>
-                                    <IconButton size="lg" onClick={() => setSpeed(1250)} icon={<TbMultiplier05X />}  />
-                                    <IconButton size="lg" onClick={() => setSpeed(700)} icon={<TbMultiplier1X />}  />
-                                    <IconButton size="lg" onClick={() => setSpeed(250)} icon={<TbMultiplier2X />}  />
+                                    <Button size="md" fontSize={30} onClick={() => setSpeed(1250)} >x.5</Button>
+                                    <Button size="md" fontSize={30} onClick={() => setSpeed(700)} >x1</Button>
+                                    <Button size="md" fontSize={30} onClick={() => setSpeed(250)} >x2</Button>
+                                    {/* <IconButton color="red" size="sm" onClick={() => setSpeed(1250)} icon={<TbMultiplier05X />}  /> */}
+                                    {/* <IconButton size="sm" onClick={() => setSpeed(250)} icon={<TbMultiplier2X size="lg"/>}  /> */}
+                                    {/* <IconButton size="sm" onClick={() => setSpeed(700)} icon={<TbMultiplier1X size="lg"/>}  /> */}
                                 </HStack>
-                            </HStack>
+                            </Flex>
                         </DrawerBody>
 
                         <DrawerFooter>
@@ -457,6 +521,11 @@ function DisplayChess() {
         )
     }
 
+    /**
+     * 
+     * @param {Object} props { disp, show, color }
+     * @returns Component (Demo selector)
+     */
     function DrawerDemo({ disp, show, color }) {
         const { isOpen, onOpen, onClose } = useDisclosure()
         const btnRef = React.useRef()
@@ -483,13 +552,14 @@ function DisplayChess() {
                                         cursor: 'pointer',
                                         transition: 'transform 0.2s ease-in-out'
                                     }}
-                                    onClick={() => { 
-                                        if(socket) {
+                                    onClick={() => {
+                                        if (socket) {
                                             notify('▶️ ' + num);
-                                            console.log(requests[num]); 
-                                            socket.emit('demoContent', requests[num])
-                                            onClose() 
-                                        }else notify('❌ Not Connected');
+                                            console.log(requests[num]);
+                                            socket.emit('demoContent', requests[num]);
+                                            setPlaying(true);
+                                            onClose();
+                                        } else notify('❌ Not Connected');
                                     }}
                                 >
                                     {`${num}`}
@@ -508,6 +578,11 @@ function DisplayChess() {
         )
     }
 
+    /**
+     * 
+     * @param {Object} props { disp, show, color }
+     * @returns Component (Gamemode selector)
+     */
     function PlacementSetting({ disp, show, color }) {
         const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -521,17 +596,17 @@ function DisplayChess() {
                         <DrawerBody>
                             <Text fontSize='sm' fontWeight='semibold' mb={2}>Choose Oponent</Text>
                             <RadioGroup onChange={(val) => {
-                                    setGamemode(parseInt(val));
-                                    if(socket)
-                                        socket.emit('currentBoard', {
+                                setGamemode(parseInt(val));
+                                if (socket)
+                                    socket.emit('currentBoard', {
                                         status: (val == 1 ? value.data().status : offlineGame.fen().split(' ')[0])
                                     });
-                                }}
+                            }}
                                 value={gamemode.toString()}
                             >
                                 <Stack direction='column' gap={4}>
                                     <Radio value='1'>Satellite</Radio>
-                                    <Radio value='2'>AI</Radio>
+                                    <Radio value='2'>Play Local</Radio>
                                 </Stack>
                             </RadioGroup>
                         </DrawerBody>
@@ -552,7 +627,7 @@ function DisplayChess() {
                 {loading && <TailSpin type="Puff" color="#808080" height="100%" width="100%" />}
 
                 <VStack mr={5}>
-                    
+                    {/* Votes and demo player */}
                     <HStack>
                         <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
                         <DrawerPlayer disp='block' color='orange' />
@@ -560,8 +635,9 @@ function DisplayChess() {
                     {/* LGRig Controller */}
                     {/* gamemode and demo */}
                     <HStack>
-                        <PlacementSetting disp='block' color='orange' />
                         <DrawerDemo disp='block' color='orange' />
+                        <PlacementSetting disp='block' color='orange' />
+                        <Button size='sm' colorScheme='red' display={gamemode == 2 ? 'block' : 'none'} onClick={resetOfflineGame} >Reset</Button>
                     </HStack>
 
                     <VStack display={{ base: (enabledCon ? 'flex' : 'none'), md: 'flex', lg: 'flex' }} align='center' justify='center'>
@@ -574,19 +650,18 @@ function DisplayChess() {
 
                         {/* Chessboard position controls */}
                         <HStack >
-                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView('white')}>♖</Button>
-                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView('center')}>
-                                <Icon as={MdOutlineCenterFocusWeak} />
-                            </Button>
-                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView('black')}>♜</Button>
+                            <Button fontSize={50} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView('white')}>♖</Button>
+                            <IconButton display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView('center')} icon={<MdOutlineCenterFocusWeak size="lg" />} />
+                            {/* <Icon size="lg" as={MdOutlineCenterFocusWeak} /> */}
+                            <Button fontSize={50} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView('black')}>♜</Button>
                         </HStack>
 
                         {/* Chessboard vertical position controls */}
                         <HStack >
-                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView(+0.1)}>↺</Button>
-                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={10} h={20} size='md' colorScheme='gray' onClick={() => updateView(0, +0.1)}>&darr;</Button>
-                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={10} h={20} size='md' colorScheme='gray' onClick={() => updateView(0, -0.1)}>&uarr;</Button>
-                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView(-0.1)}>↻</Button>
+                            <Button fontSize={50} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView(+0.1)}>↺</Button>
+                            <Button fontSize={15} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={10} h={20} size='md' colorScheme='gray' onClick={() => updateView(0, +0.1)}>&darr;</Button>
+                            <Button fontSize={15} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={10} h={20} size='md' colorScheme='gray' onClick={() => updateView(0, -0.1)}>&uarr;</Button>
+                            <Button fontSize={50} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView(-0.1)}>↻</Button>
                         </HStack >
                     </VStack>
 
@@ -638,7 +713,10 @@ function DisplayChess() {
                             customDropSquareStyle={{ boxShadow: 'inset 0 0 1px 6px rgba(255,200,100,0.75)' }}
                             animationDuration={500}
                             customArrows={arrow === null || gamemode == 2 ? [] : [arrow]}
-                            customBoardStyle={{ borderRadius: '5px'}}
+                            customBoardStyle={{ borderRadius: '5px' }}
+                            customSquareStyles={gamemode != 1 ?
+                                squareStyle : {}
+                            }
                         />
                     }
                 </Box>

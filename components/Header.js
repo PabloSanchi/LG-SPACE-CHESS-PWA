@@ -62,6 +62,15 @@ const Header = (props) => {
         }
     );
 
+    // fetch chessboard status
+    const [value, loading, error] = useDocument(
+        doc(db, 'chess', 'ChessBoardStatus'),
+        {
+            snapshotListenOptions: { includeMetadataChanges: true },
+        }
+    );
+    
+
     const notify = (text) => toast(text);
 
     const handleSignOut = () => {
@@ -129,9 +138,9 @@ const Header = (props) => {
                 console.log('Cliente Conectado');
                 console.log(soc.id);
 
-                // soc.emit('currentBoard', {
-                //     status: value.data().status
-                // });
+                soc.emit('currentBoard', {
+                    status: value.data().status
+                });
             });
 
             soc.on("connect_error", (err) => {
@@ -189,6 +198,16 @@ const Header = (props) => {
         }
     }
 
+    /**
+     * resetScreens -> Stop everything and reset the screens
+     */
+    const resetScreens = () => {
+        console.log('reseting screens');
+        if(socket) {
+            socket.emit('killAll');
+        }
+    }
+
     const GetModal = () => {
         return (
             <Modal
@@ -211,27 +230,23 @@ const Header = (props) => {
                                 </Button>
                             </HStack>
                         </FormControl>
-
-                        <FormControl>
-                            <FormLabel>Hide Logos</FormLabel>
-                            <Button onClick={hideLogos}>Hide/Show</Button>
-                        </FormControl>
-
-                        <FormControl>
+                        
+                        <FormControl mt={2}>
                             <FormLabel>Reboot Rig</FormLabel>
                             <Button colorScheme='yellow' onClick={reboot}>Reboot</Button>
                         </FormControl>
 
-                        <FormControl>
+                        <FormControl mt={2}>
                             <FormLabel>Poweroff Rig</FormLabel>
                             <Button colorScheme='red' onClick={poweroff}>Poweroff</Button>
                         </FormControl>
+                        
                     </ModalBody>
 
                     <ModalFooter>
                         <VStack>
                             <HStack>
-
+                                <Button colorScheme='red' onClick={resetScreens}>Hard Reset</Button>
                                 <Button colorScheme={socket == null ? 'green' : 'red'} onClick={handleConnect} >
                                     {socket != null ? 'Disconnect' : 'Connect'}
                                 </Button>
@@ -313,10 +328,12 @@ const Header = (props) => {
                         mr={{ base: 0, sm: 5 }}>
                         {themeLogo}
                     </Box>
-                    <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={() => { router.push('/about') }} name="About" />
+
+                    <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={() => { router.push('/') }} name="Board" />
                     <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={() => { router.push('/findsat') }} name="FindSat" />
                     <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={onOpen} name="LGSettings" />
-                    <CustomButton bgColor={ButtonBg} mbVal={0} mrVal={0} foo={handleSignOut} name="SignOut" />
+                    <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={handleSignOut} name="SignOut" />
+                    <CustomButton bgColor={ButtonBg} mbVal={0} mrVal={0} foo={() => { router.push('/about') }} name="About" />
                 </Flex>
             </Box>
 
@@ -325,7 +342,7 @@ const Header = (props) => {
     );
 };
 
-function CustomButton({ mainBtn, bgColor, mbVal, mrVal, foo, name }) {
+function CustomButton({ bgColor, mbVal, mrVal, foo, name }) {
     return (
         <Button
             color={bgColor == "white" ? "orange.800" : "white"}

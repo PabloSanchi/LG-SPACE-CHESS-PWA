@@ -30,12 +30,17 @@ function AboutBody() {
     return (
         <VStack>
             {/* Project logo */}
-            <Image width={600} height={250} src={mainLogo} alt="main logo"></Image>
-            <Divider mb={3} w={120} orientation='horizontal' />
+            {/* <Image width={600} height={250} src={mainLogo} alt="main logo"></Image> */}
+            {/* <Divider mb={3} w={120} orientation='horizontal' /> */}
             {/* Author name */}
             <Text mt={3} fontSize='xl' fontWeight='bold'>Author: Pablo {`Sanchidri\u00E1n`}</Text>
+            <Divider w={120} orientation='horizontal' />
             {/* Mentor name */}
-            <Text fontSize='xl' fontWeight='bold'>Mentor: {`V\u00EDctor`} {`S\u00E1nchez`}</Text>
+            <VStack fontSize='xl' fontWeight='bold'>
+                <Text >Mentors:</Text>
+                <Text>Andreu {`Iba\u00f1ez`}</Text>
+                <Text>{`V\u00EDctor`} {`S\u00E1nchez`}</Text>
+            </VStack>
             <Divider w={120} orientation='horizontal' />
             {/* Author contact */}
             <Text fontSize='xl' >Author Contact info:</Text>
@@ -57,13 +62,9 @@ function AboutBody() {
             <Box mt={3}>
                 <Image width={764} height={758} src={logos} alt="main logo"></Image>
             </Box>
-            {/* <HStack maxW={'lg'} p={10} >
-                <Image p={20} src={LQlogo} alt="lq logo"></Image>
-                <Image p={20} src={Gsoc} alt="main gsoc"></Image>
-            </HStack> */}
 
             {/* Project Description */}
-            <Text maxW={'3xl'} p={5} >
+            <Text fontSize={{base: '18px', md: '20px', lg: '25px'}} maxW={'3xl'} p={5} >
                 A Newspace-related visualization project in collaboration with Hydra-Space.
                 The basic idea is to use the Liquid Galaxy cluster to visualize a world chess game that will happen
                 with people worldwide and through satellite communications, a world&apos;s first !!!
