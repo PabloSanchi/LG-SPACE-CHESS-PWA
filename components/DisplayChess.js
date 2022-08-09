@@ -97,10 +97,10 @@ function DisplayChess() {
         if (socket !== null) {
             setEnableCon(true); setConStat('Connected');
             
-            soc.emit('currentBoard', {
+            socket.emit('currentBoard', {
                 status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0])
             });
-            
+
         } else {
             setEnableCon(false); setConStat('Disconnected');
         }
