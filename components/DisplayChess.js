@@ -216,14 +216,7 @@ function DisplayChess() {
     * @returns {boolean} true if the move is legal, false if ilegal
     */
     async function onDropOffline(sourceSquare, targetSquare) {
-
-        // security check
-        if( offlineGame.fen().split(' ')[0] == 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR' ) {
-            soc.emit('currentBoard', {
-                status: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
-            });
-        }
-
+        
         // apply move
         let move = offlineGame.move({
             from: sourceSquare,
