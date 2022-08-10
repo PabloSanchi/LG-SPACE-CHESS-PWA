@@ -15,7 +15,8 @@ import { Stack, Box, Progress, HStack, Button, Text, Flex, VStack, Icon, Badge, 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db, doc } from "../firebase";
 import { collection, updateDoc, setDoc, getDoc } from "firebase/firestore";
-import ReactNipple from 'react-nipple';
+// import ReactNipple from 'react-nipple';
+import { Joystick } from 'react-joystick-component';
 
 import { MdOutlineCenterFocusWeak } from 'react-icons/md'
 import { Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, } from '@chakra-ui/react';
@@ -34,10 +35,15 @@ import { CloseIcon } from '@chakra-ui/icons';
 
 
 function DisplayChess() {
+
     // VARIABLE DECLARATIONS
+    // demo info
+    const [playing, setPlaying] = useState(false);
+    
+    // theme color
     const bgColor = useColorModeValue('gray.50', 'whiteAlpha.50');
+
     // socket and status
-    let soc = 'null';
     const [socket] = useGlobalState('socket');
     const setSocket = (soc) => {
         setGlobalState('socket', soc);
@@ -87,11 +93,10 @@ function DisplayChess() {
             snapshotListenOptions: { includeMetadataChanges: true },
         }
     );
-    // demo info
-    const [playing, setPlaying] = useState(false);
+
     // notifications
     const notify = (text) => toast(text);
- 
+
     // check if connected to the screens
     useEffect(() => {
         if (socket !== null) {
@@ -99,6 +104,8 @@ function DisplayChess() {
         } else {
             setEnableCon(false); setConStat('Disconnected');
         }
+
+        setPlaying(false);
     }, [socket]);
 
     /**
@@ -106,7 +113,7 @@ function DisplayChess() {
      */
     useEffect(() => {
         // gamemode == 1 ? value.data()?.status : offlineStatus
-        if(socket && value?.data()?.status !== undefined) {
+        if (!playing && socket && value?.data()?.status !== undefined) {
             socket.emit('currentBoard', {
                 status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0])
             });
@@ -200,7 +207,7 @@ function DisplayChess() {
             } else if (cad[i] == '/') {
                 a++; b = 0;
             } else b++;
-            
+
             if (cad[i] == target) break;
         }
 
@@ -211,9 +218,14 @@ function DisplayChess() {
         setOfflineGame(new Chess());
         setOfflineStatus(new Chess().fen().split(' ')[0]);
         setSquareStyle({});
-        if (socket) socket.emit('currentBoard', { status: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'});
+        if (socket) socket.emit('currentBoard', { status: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR' });
     }
-    
+
+    const restoreScreenBoard = () => {
+        setPlaying(false);
+        if (socket) socket.emit('currentBoard', { status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]) });
+    }
+
     /**
     * onDropOffline -> set onDrop and AI move
         - move validation
@@ -233,7 +245,7 @@ function DisplayChess() {
 
         // check if move is legal
         if (move === null) {
-            notify('❌ Illegal Move: ' + targetSquare); 
+            notify('❌ Illegal Move: ' + targetSquare);
             return false;
         }
 
@@ -257,7 +269,9 @@ function DisplayChess() {
         // if the game has ended via checkmate, stalemate, draw, threefold repetition, or insufficient material. 
         // Otherwise, returns false.
         if (offlineGame.game_over()) {
-            resetOfflineGame();
+            notify('🏆 WHITE WON');
+            setTimeout(() => resetOfflineGame(), 1000);
+            // resetOfflineGame();
             return true;
         }
 
@@ -319,7 +333,8 @@ function DisplayChess() {
         // if the game has ended via checkmate, stalemate, draw, threefold repetition, or insufficient material. 
         // Otherwise, returns false.
         if (offlineGame.game_over()) {
-            resetOfflineGame();
+            notify('🏆 BLACK WON');
+            setTimeout(() => resetOfflineGame(), 1000);
             return true;
         } else {
             // if the player is in check 
@@ -469,6 +484,23 @@ function DisplayChess() {
     }
 
     /**
+     * killDemo -> kill the demo & set the chessboard accordingly to the gamemode
+     */
+    const killDemo = () => {
+        if (socket) {
+            socket.emit('demoKill');
+            setTimeout(() => {
+                if (socket && value?.data()?.status !== undefined) {
+                    socket.emit('currentBoard', {
+                        status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0])
+                    });
+                }
+                notify('demo killed');
+            }, 1250);
+        }
+    }
+
+    /**
      * 
      * @param {Object} props { color }
      * @returns Component (player for the demo)
@@ -476,7 +508,6 @@ function DisplayChess() {
     function DrawerPlayer({ color }) {
         const { isOpen, onOpen, onClose } = useDisclosure()
         const btnRef = React.useRef()
-        const [pl, setPl] = useState(false);
 
         return (
             <>
@@ -505,9 +536,9 @@ function DisplayChess() {
                                     <Button fontSize={30} size="md" onClick={() => {
                                         if (socket) {
                                             socket.emit('playstop');
-                                            setPlaying(!pl);
+                                            setPlaying(!playing);
                                         }
-                                    }}>{!pl ? '▷' : '||'}</Button>
+                                    }}>{!playing ? '▷' : '||'}</Button>
                                     <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoForward'); }}>{'>'}</Button>
                                 </HStack>
 
@@ -519,6 +550,8 @@ function DisplayChess() {
                                     {/* <IconButton size="sm" onClick={() => setSpeed(250)} icon={<TbMultiplier2X size="lg"/>}  /> */}
                                     {/* <IconButton size="sm" onClick={() => setSpeed(700)} icon={<TbMultiplier1X size="lg"/>}  /> */}
                                 </HStack>
+
+                                <Button size='md' colorScheme='red' onClick={killDemo} >Kill Demo</Button>
                             </Flex>
                         </DrawerBody>
 
@@ -643,6 +676,7 @@ function DisplayChess() {
                     <HStack>
                         <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
                         <DrawerPlayer disp='block' color='orange' />
+                        <Button display={socket ? 'block' : 'none'} m={1} w={20} size='sm' colorScheme='red' onClick={restoreScreenBoard}>RESTORE</Button>
                     </HStack>
                     {/* LGRig Controller */}
                     {/* gamemode and demo */}
@@ -678,43 +712,61 @@ function DisplayChess() {
                     </VStack>
 
                     {/* JoySticks */}
+
                     {conStat == 'Connected' &&
-                        <HStack m={5} justifyContent={'center'}>
-                            <CustomNipple color={enabledCon ? "green" : "gray"}
-                                move={(evt, data) => {
+                        <Flex m={5}  direction='row' justify='space-between'>
+                            <Joystick
+                                size={100}
+                                sticky={false}
+                                baseColor="#3e964e"
+                                stickColor="#0e611d"
+                                move={(e) => {
                                     try {
-                                        if (data.direction['angle'] == 'left') {
-                                            sendMove(-5, 0)
-                                        } else {
-                                            sendMove(+5, 0)
-                                        }
+                                        if (e.direction == 'LEFT')
+                                            sendMove(-3, 0)
+                                        else if (e.direction == 'RIGHT')
+                                            sendMove(+3, 0)
                                     } catch (err) { }
-                                }} lX={true} lY={false}
-                            />
-                            <Box display={{ base: 'block', md: 'block', lg: 'none' }}>
-                                <CustomNipple color={enabledCon ? "blue" : "gray"}
-                                    move={(evt, data) => {
+                                }}
+                            ></Joystick>
+
+                            <Box ml={{base: 2, md: 10, lg: 0}} display={{ base: 'block', md: 'block', lg: 'none' }}>
+                                <Joystick
+                                    size={100}
+                                    sticky={false}
+                                    baseColor="#349beb"
+                                    stickColor="#0f64a6"
+                                    move={(e) => {
                                         try {
-                                            if (data.direction['angle'] == 'up') {
-                                                sendMove(0, -5)
-                                            } else {
-                                                sendMove(0, +5)
-                                            }
+                                            if (e.direction == 'FORWARD')
+                                                sendMove(0, -3)
+                                            else if (e.direction == 'BACKWARD')
+                                                sendMove(0, +3)
                                         } catch (err) { }
-                                    }} lX={false} lY={true}
-                                />
+                                    }}
+                                ></Joystick>
                             </Box>
-                        </HStack>
+                        </Flex>
+                        
                     }
-                </VStack>
+
+                </VStack >
 
                 {/* Data & Board*/}
                 <Box align="center" mb={3}>
                     <HStack>
                         {userDoc && <Badge m={1} colorScheme='none' > IP: {userDoc.data()?.lqrigip}</Badge>}
-                        {value && <Badge m={1} colorScheme='none'>
-                            Turn: {value.data()?.turn == 'w' ? "You" : "Satellite"}</Badge>}
-                        {userDoc && <Badge mt={3} colorScheme='none' >Attempts: {userDoc.data()?.limit}</Badge>}
+                        {value && 
+                            <Badge m={1} colorScheme='none'>Turn: 
+                                {   gamemode == 1 
+                                    ?
+                                    (value.data()?.turn == 'w' ? ' You' : ' Satellite') 
+                                    :
+                                    (offlineGame.turn() == 'w' ? ' You' : ' Opponent')
+                                }
+                            </Badge>
+                        }
+                        {userDoc && gamemode == 1 && <Badge mt={3} colorScheme='none' >Attempts: {userDoc.data()?.limit}</Badge>}
                     </HStack>
 
                     {userDoc && value &&
@@ -735,18 +787,21 @@ function DisplayChess() {
 
                 {/* right joystick only for large view */}
                 {conStat == 'Connected' &&
-                    <Center mt={280} align="center" justify="sspace-between" display={{ base: 'none', md: 'none', lg: 'block' }} >
-                        <CustomNipple color={enabledCon ? "blue" : "gray"}
-                            move={(evt, data) => {
+                    <Center ml={2} mt={280} align="center" justify="space-between" display={{ base: 'none', md: 'none', lg: 'block' }} >
+                        <Joystick
+                            size={100}
+                            sticky={false}
+                            baseColor="#349beb"
+                            stickColor="#0f64a6"
+                            move={(e) => {
                                 try {
-                                    if (data.direction['angle'] == 'up') {
-                                        sendMove(0, -5)
-                                    } else {
-                                        sendMove(0, +5)
-                                    }
+                                    if (e.direction == 'FORWARD')
+                                        sendMove(0, -3)
+                                    else if (e.direction == 'BACKWARD')
+                                        sendMove(0, +3)
                                 } catch (err) { }
-                            }} lX={false} lY={true}
-                        />
+                            }}
+                        ></Joystick>
                     </Center>
                 }
             </Flex>
@@ -761,33 +816,6 @@ function DisplayChess() {
             />
         </VStack>
     )
-}
-
-
-// custom joystick
-function CustomNipple({ color, move, lX, lY, display }) {
-    return (
-        <ReactNipple
-            options={{
-                color: color,
-                lockX: lX,
-                lockY: lY,
-                mode: "static",
-                position: { top: "50%", left: "50%" },
-            }}
-
-            display={display}
-
-            style={{
-                width: 120,
-                height: 120,
-                position: "relative"
-            }}
-
-            onMove={move}
-        >
-        </ ReactNipple>
-    );
 }
 
 // votes modal

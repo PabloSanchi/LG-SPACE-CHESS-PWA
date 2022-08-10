@@ -224,7 +224,7 @@ const Header = (props) => {
                         <FormControl>
                             <FormLabel>LGRig IP</FormLabel>
                             <HStack>
-                                <Input placeholder='192.168.0.1' onChange={(e) => lqIp = e.target.value} />
+                                <Input placeholder='e.g. 192.168.0.1' onChange={(e) => lqIp = e.target.value} />
                                 <Button color="white" backgroundColor="orange.300" mr={3} onClick={handleSaveIp}>
                                         Save
                                 </Button>
