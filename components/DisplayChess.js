@@ -528,18 +528,20 @@ function DisplayChess() {
                         <DrawerBody>
                             <Flex align="center" justify='center' direction={['column', 'row', 'row']} gap={2}>
                                 <HStack>
-                                    {/* <IconButton size="sm" onClick={() => {if(socket) socket.emit('demoBackward');}} 
-                                    icon={<TbPlayerSkipBack size="lg" />}  /> */}
-                                    {/* <IconButton size="sm" onClick={() => {if(socket) socket.emit('demoForward');}} icon={<TbPlayerSkipForward size="md"/>}  /> */}
-
-                                    <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoBackward'); }}>{'<'}</Button>
+                                    
+                                    
+                                    <IconButton size="md" onClick={() => {if(socket) socket.emit('demoBackward');}} icon={<TbPlayerSkipBack size="lg" />}  />
+                                    {/* <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoBackward'); }}>{'<'}</Button> */}
                                     <Button fontSize={30} size="md" onClick={() => {
                                         if (socket) {
                                             socket.emit('playstop');
                                             setPlaying(!playing);
                                         }
-                                    }}>{!playing ? '▷' : '||'}</Button>
-                                    <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoForward'); }}>{'>'}</Button>
+                                    }}>
+                                        ▷
+                                    </Button>
+                                    <IconButton size="md" onClick={() => {if(socket) socket.emit('demoForward');}} icon={<TbPlayerSkipForward size="lg"/>}  />
+                                    {/* <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoForward'); }}>{'>'}</Button> */}
                                 </HStack>
 
                                 <HStack>
@@ -705,10 +707,13 @@ function DisplayChess() {
                         {/* Chessboard vertical position controls */}
                         <HStack >
                             <Button fontSize={50} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView(+0.1)}>↺</Button>
-                            <Button fontSize={15} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={10} h={20} size='md' colorScheme='gray' onClick={() => updateView(0, +0.1)}>&darr;</Button>
-                            <Button fontSize={15} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={10} h={20} size='md' colorScheme='gray' onClick={() => updateView(0, -0.1)}>&uarr;</Button>
+                            <Flex direction='column' >
+                                <Button fontSize={30} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} size='lg' colorScheme='gray' onClick={() => updateView(0, -0.1)}>↑</Button>
+                                <Button fontSize={30} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} size='lg' colorScheme='gray' onClick={() => updateView(0, +0.1)}>↓</Button>
+                            </Flex >
                             <Button fontSize={50} display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} h={20} size='md' colorScheme='gray' onClick={() => updateView(-0.1)}>↻</Button>
                         </HStack >
+
                     </VStack>
 
                     {/* JoySticks */}
