@@ -1,3 +1,77 @@
+# LG SPACE CHESS PWA
+Liquid Galaxy Space Chess PWA is the web/apk controller for the Space Chess Visualization project that runs in the rig/cluster.
+
+## Structure
+### Endpoints
+- Dashboard [Endpoint /]
+- FindSat [Endpoint /findsat]
+- About [Endpoint /about]
+
+### Features
+
+- Dashboard:
+  - Chesboard:
+    - Interative vote and piece movement
+  - Votes:
+    - Show current votes
+    - Send status to the cluster
+  - Player:
+    - Go Backwards
+    - Play/Pause
+    - Go Fordwards
+    - Speed x0.5
+    - Speed x1
+    - Speed x2
+    - Kill demo (stop demo and reset screen)
+  - Demo:
+    - Selector of top 10 chess plays
+  - Mode:
+    - Opponent Selector (Satellite, Play Local)
+    - Play against the satellite [NOW]
+    - Play against the machine [NOW]
+    - Play online [FUTURE]
+  - Chess:
+    - Show chess in the screens
+  - Earth:
+    - Show earth in the screens
+  - ♖:
+    - Show white pieces perspective in the screens
+  - ◼:
+    - Reset camera and chess position
+  - ♜:
+    - Show black pieces perspective in the screens
+  - ↺: 
+    - Negative rotation of the chessboard in the screens
+  - ↑:
+    - Increase slope of the chessboard in the screens
+  - ↓:
+    - Decrease slope of the chessboard in the screens
+  - ↻:
+    - Positive rotation of the chessboard in the screens
+
+
+- LGSettings:
+  - Enter IP (master ip of the cluster)
+  - Reboot (Reboot cluster)
+  - Poweroff (Poweroff cluster)
+  - HardReset (Complete Reset of the cluster, in case of failure)
+
+- FindSat:
+  - Display the current position of the satellite in a map.
+
+- About:
+  - Project logos & author & mentors & contact info & Description
+
+- Header:
+  - Connection semaphore (ON/OFF)
+  - Toggle light/dark mode
+  - Board button
+  - FindSat button
+  - LGSetting button
+  - SignOut button
+  - About button
+
+
 # BUILD
 ```
 yarn run build
@@ -6,3 +80,9 @@ yarn run build
 ```
 yarn run start
 ```
+
+# DEV
+```
+yarn run dev
+```
+
