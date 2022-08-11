@@ -18,7 +18,7 @@ import { collection, updateDoc, setDoc, getDoc } from "firebase/firestore";
 // import ReactNipple from 'react-nipple';
 import { Joystick } from 'react-joystick-component';
 
-import { MdOutlineCenterFocusWeak } from 'react-icons/md'
+import { MdOutlineCenterFocusWeak, MdPlayArrow } from 'react-icons/md'
 import { Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, } from '@chakra-ui/react';
 import { Switch, RadioGroup, Radio, useColorModeValue } from '@chakra-ui/react';
 
@@ -33,6 +33,8 @@ import { io } from "socket.io-client";
 import { TbPlayerPause, TbPlayerPlay, TbPlayerSkipBack, TbPlayerSkipForward, TbMultiplier1X, TbMultiplier05X, TbMultiplier2X } from 'react-icons/tb';
 import { CloseIcon } from '@chakra-ui/icons';
 
+
+import { ArrowLeftIcon, ArrowRightIcon } from '@chakra-ui/icons';
 
 function DisplayChess() {
 
@@ -515,7 +517,7 @@ function DisplayChess() {
 
         return (
             <>
-                <Button ref={btnRef} mt={10} m={1} w={20} size='sm' colorScheme={color} onClick={onOpen} >Player</Button>
+                <Button ref={btnRef} mt={10} m={1} size='sm' colorScheme={color} onClick={onOpen} >Player</Button>
                 <Drawer
                     isOpen={isOpen}
                     placement='bottom'
@@ -534,27 +536,34 @@ function DisplayChess() {
                                 <HStack>
                                     
                                     
-                                    <IconButton size="md" onClick={() => {if(socket) socket.emit('demoBackward');}} icon={<TbPlayerSkipBack size="lg" />}  />
+                                    <IconButton size="md" w={20} onClick={() => {if(socket) socket.emit('demoBackward');}} icon={<ArrowLeftIcon w={8} h={8} />}  />
                                     {/* <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoBackward'); }}>{'<'}</Button> */}
-                                    <Button fontSize={30} size="md" onClick={() => {
+                                    <Button fontSize={30} w={20} size="md" onClick={() => {
                                         if (socket) {
                                             socket.emit('playstop');
                                             setPlaying(!playing);
                                         }
                                     }}>
-                                        ▷
+                                        <Icon w={12} h={12} as={MdPlayArrow} />
                                     </Button>
-                                    <IconButton size="md" onClick={() => {if(socket) socket.emit('demoForward');}} icon={<TbPlayerSkipForward size="lg"/>}  />
+                                    <IconButton size="md" w={20} onClick={() => {if(socket) socket.emit('demoForward');}} icon={<ArrowRightIcon w={8} h={8} />}  />
                                     {/* <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoForward'); }}>{'>'}</Button> */}
                                 </HStack>
 
                                 <HStack>
-                                    <Button size="md" fontSize={30} onClick={() => setSpeed(1250)} >x.5</Button>
-                                    <Button size="md" fontSize={30} onClick={() => setSpeed(700)} >x1</Button>
-                                    <Button size="md" fontSize={30} onClick={() => setSpeed(250)} >x2</Button>
-                                    {/* <IconButton color="red" size="sm" onClick={() => setSpeed(1250)} icon={<TbMultiplier05X />}  /> */}
-                                    {/* <IconButton size="sm" onClick={() => setSpeed(250)} icon={<TbMultiplier2X size="lg"/>}  /> */}
-                                    {/* <IconButton size="sm" onClick={() => setSpeed(700)} icon={<TbMultiplier1X size="lg"/>}  /> */}
+                                    <Button size="md" w={20} fontSize={30} onClick={() => setSpeed(1250)} >
+                                        <Icon w={12} h={12} as={TbMultiplier05X} />
+                                    </Button>
+                                    <Button size="md" w={20} fontSize={30} onClick={() => setSpeed(700)} >
+                                        <Icon w={12} h={12} as={TbMultiplier1X} />
+                                    </Button>
+                                    <Button size="md" w={20} fontSize={30} onClick={() => setSpeed(250)} >
+                                        <Icon w={12} h={12} as={TbMultiplier2X} />
+                                    </Button>
+{/*                                     
+                                    <IconButton w={20} size="md" onClick={() => setSpeed(1250)} icon={<TbMultiplier05X size="lg" />}  />
+                                    <IconButton w={20} size="md" onClick={() => setSpeed(250)} icon={<TbMultiplier2X size="lg"/>}  />
+                                    <IconButton w={20} size="md" onClick={() => setSpeed(700)} icon={<TbMultiplier1X size="lg"/>}  /> */}
                                 </HStack>
 
                                 <Button size='md' colorScheme='red' onClick={killDemo} >Kill Demo</Button>
@@ -680,7 +689,7 @@ function DisplayChess() {
                 <VStack mr={5}>
                     {/* Votes and demo player */}
                     <HStack>
-                        <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
+                        <Button m={1} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
                         <DrawerPlayer disp='block' color='orange' />
                         <Button display={socket ? 'block' : 'none'} m={1} size='sm' colorScheme='red' onClick={restoreScreenBoard}>RESTORE</Button>
                     </HStack>
