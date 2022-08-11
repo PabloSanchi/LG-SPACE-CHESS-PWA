@@ -272,7 +272,7 @@ function DisplayChess() {
         // if the game has ended via checkmate, stalemate, draw, threefold repetition, or insufficient material. 
         // Otherwise, returns false.
         if (offlineGame.game_over()) {
-            notify('🏆 WHITE WON');
+            notify('🏆 WHITE WINS');
             setTimeout(() => resetOfflineGame(), 1000);
             return false;
         }else {
@@ -336,7 +336,7 @@ function DisplayChess() {
         // if the game has ended via checkmate, stalemate, draw, threefold repetition, or insufficient material. 
         // Otherwise, returns false.
         if (offlineGame.game_over()) {
-            notify('🏆 BLACK WON');
+            notify('🏆 BLACK WINS');
             setTimeout(() => resetOfflineGame(), 1000);
             return false;
         } else {
@@ -682,7 +682,7 @@ function DisplayChess() {
                     <HStack>
                         <Button m={1} w={20} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
                         <DrawerPlayer disp='block' color='orange' />
-                        <Button display={socket ? 'block' : 'none'} m={1} w={20} size='sm' colorScheme='red' onClick={restoreScreenBoard}>RESTORE</Button>
+                        <Button display={socket ? 'block' : 'none'} m={1} size='sm' colorScheme='red' onClick={restoreScreenBoard}>RESTORE</Button>
                     </HStack>
                     {/* LGRig Controller */}
                     {/* gamemode and demo */}
