@@ -57,13 +57,15 @@ function AboutBody() {
                     <SocialMediaButton where='https://www.linkedin.com/in/pablosanchidrian' icon={FaLinkedinIn} text='LinkedIn' />
                 </Flex>
             </Box>
-
+            <Divider w={120} orientation='horizontal' />
+            
             {/* Logos */}
             <Box mt={3}>
                 <Image width={764} height={758} src={logos} alt="main logo"></Image>
             </Box>
-
+            
             {/* Project Description */}
+            <Divider w={120} orientation='horizontal' />
             <Text fontSize={{base: '18px', md: '20px', lg: '25px'}} maxW={'3xl'} p={5} >
                 A Newspace-related visualization project in collaboration with Hydra-Space.
                 The basic idea is to use the Liquid Galaxy cluster to visualize a world chess game that will happen

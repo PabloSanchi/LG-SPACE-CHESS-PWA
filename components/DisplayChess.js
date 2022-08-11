@@ -566,12 +566,12 @@ function DisplayChess() {
                                     </Button>
 
                                 </HStack>
-
-                                <Button size='md' colorScheme='red' onClick={killDemo} >Kill Demo</Button>
                             </Flex>
                         </DrawerBody>
 
-                        <DrawerFooter>
+                        <DrawerFooter gap={3}>
+                            <Button size='md' colorScheme='red' onClick={killDemo} >Kill Demo</Button>
+                            
                             <Button variant='outline' colorScheme='orange' mr={3} onClick={onClose}>
                                 Close
                             </Button>
