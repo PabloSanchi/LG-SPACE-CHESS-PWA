@@ -55,14 +55,13 @@ function DisplayChess() {
 
     // game mode
     let parseLetter = { 1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h' };
-    const [squareStyle, setSquareStyle] = useState({});
     const [gamemode, setGamemode] = useState(1);
-    // const [offlineGame, setOfflineGame] = useState(new Chess())
+    
+    // const [squareStyle, setSquareStyle] = useState({});
+    const [squareStyle] = useGlobalState('squareStyle');
+    const setSquareStyle = (sty) => { setGlobalState('squareStyle', sty); }
     const [offlineGame] = useGlobalState('offlineGame');
-    const setOfflineGame = (game) => {
-        setGlobalState('offlineGame', game);
-    }
-
+    const setOfflineGame = (game) => { setGlobalState('offlineGame', game); }
     const [offlineStatus, setOfflineStatus] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
     
     // user data
