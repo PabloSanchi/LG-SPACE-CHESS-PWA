@@ -23,7 +23,7 @@ function Splash({ setShown }) {
         left: '50%',
         // transform  : 'translate(-50%, -50%)'
       }}
-      width={764} height={758} src={logos} alt="main logo"></Image>
+      width={764} height={594} src={logos} alt="main logo"></Image>
     </Center>
   )
 }

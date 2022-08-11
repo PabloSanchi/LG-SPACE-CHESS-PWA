@@ -61,7 +61,7 @@ function AboutBody() {
             
             {/* Logos */}
             <Box mt={3}>
-                <Image width={764} height={758} src={logos} alt="main logo"></Image>
+                <Image padding={5} width={764} height={594} src={logos} alt="main logo"></Image>
             </Box>
             
             {/* Project Description */}

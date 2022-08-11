@@ -265,7 +265,7 @@ const Header = (props) => {
             color='white'
             bgColor={bgColor}
             mb={1}
-            p={8}
+            p={5}
             as="nav"
             align="center"
             justify="space-between"
