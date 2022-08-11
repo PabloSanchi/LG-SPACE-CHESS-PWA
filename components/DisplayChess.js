@@ -30,7 +30,7 @@ import { setGlobalState, useGlobalState } from '../components/socketState';
 
 import { useRouter } from 'next/router'
 import { io } from "socket.io-client";
-import { TbPlayerPause, TbPlayerPlay, TbPlayerSkipBack, TbPlayerSkipForward, TbMultiplier1X, TbMultiplier05X, TbMultiplier2X } from 'react-icons/tb';
+import { TbMultiplier1X, TbMultiplier05X, TbMultiplier2X } from 'react-icons/tb';
 import { CloseIcon } from '@chakra-ui/icons';
 
 
@@ -52,23 +52,33 @@ function DisplayChess() {
     }
     const [conStat, setConStat] = useState('Disconnected');
     const [enabledCon, setEnableCon] = useState(false);
+
     // game mode
     let parseLetter = { 1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h' };
     const [squareStyle, setSquareStyle] = useState({});
     const [gamemode, setGamemode] = useState(1);
-    const [offlineGame, setOfflineGame] = useState(new Chess())
+    // const [offlineGame, setOfflineGame] = useState(new Chess())
+    const [offlineGame] = useGlobalState('offlineGame');
+    const setOfflineGame = (game) => {
+        setGlobalState('offlineGame', game);
+    }
+
     const [offlineStatus, setOfflineStatus] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+    
     // user data
     const [user, loadingUser] = useAuthState(auth); // user
     const [arrow, setArrow] = useState(null); // chessboard arrow
+    
     // media query
     const [isMobile] = useMediaQuery('(max-width: 560px)');
     const [dimensions, setDimensions] = useState({
         height: window.innerHeight,
         width: window.innerWidth
     }) // responsive (affect chessboard only)
+    
     // vote modal
     const { isOpen, onOpen, onClose } = useDisclosure();
+    
     // references
     const initialRef = useRef(null);
     const finalRef = useRef(null);
@@ -529,15 +539,11 @@ function DisplayChess() {
                         <DrawerCloseButton />
                         <DrawerHeader>Demo Player</DrawerHeader>
 
-                        {/* TbPlayerPause, TbPlayerPlay, TbPlayerSkipBack, TbPlayerSkipForward, TbMultiplier1X, TbMultiplier05X, TbMultiplier2X */}
-
                         <DrawerBody>
                             <Flex align="center" justify='center' direction={['column', 'row', 'row']} gap={2}>
                                 <HStack>
                                     
-                                    
                                     <IconButton size="md" w={20} onClick={() => {if(socket) socket.emit('demoBackward');}} icon={<ArrowLeftIcon w={8} h={8} />}  />
-                                    {/* <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoBackward'); }}>{'<'}</Button> */}
                                     <Button fontSize={30} w={20} size="md" onClick={() => {
                                         if (socket) {
                                             socket.emit('playstop');
@@ -547,7 +553,6 @@ function DisplayChess() {
                                         <Icon w={12} h={12} as={MdPlayArrow} />
                                     </Button>
                                     <IconButton size="md" w={20} onClick={() => {if(socket) socket.emit('demoForward');}} icon={<ArrowRightIcon w={8} h={8} />}  />
-                                    {/* <Button fontSize={30} size="md" onClick={() => { if (socket) socket.emit('demoForward'); }}>{'>'}</Button> */}
                                 </HStack>
 
                                 <HStack>
@@ -560,10 +565,7 @@ function DisplayChess() {
                                     <Button size="md" w={20} fontSize={30} onClick={() => setSpeed(250)} >
                                         <Icon w={12} h={12} as={TbMultiplier2X} />
                                     </Button>
-{/*                                     
-                                    <IconButton w={20} size="md" onClick={() => setSpeed(1250)} icon={<TbMultiplier05X size="lg" />}  />
-                                    <IconButton w={20} size="md" onClick={() => setSpeed(250)} icon={<TbMultiplier2X size="lg"/>}  />
-                                    <IconButton w={20} size="md" onClick={() => setSpeed(700)} icon={<TbMultiplier1X size="lg"/>}  /> */}
+
                                 </HStack>
 
                                 <Button size='md' colorScheme='red' onClick={killDemo} >Kill Demo</Button>
@@ -689,7 +691,7 @@ function DisplayChess() {
                 <VStack mr={5}>
                     {/* Votes and demo player */}
                     <HStack>
-                        <Button m={1} size='sm' colorScheme='blue' onClick={onOpen}>Votes</Button>
+                        <Button m={1} size='sm' colorScheme='blue' onClick={() => {if(socket && valueVote?.data()) { socket.emit('showVotes', valueVote?.data()); } onOpen(); } }>Votes</Button>
                         <DrawerPlayer disp='block' color='orange' />
                         <Button display={socket ? 'block' : 'none'} m={1} size='sm' colorScheme='red' onClick={restoreScreenBoard}>RESTORE</Button>
                     </HStack>
@@ -790,7 +792,7 @@ function DisplayChess() {
                     {userDoc && value &&
                         <Chessboard
                             boardWidth={isMobile ? (dimensions.width - 20 > 560 ? 340 : dimensions.width - 20) : 500}
-                            position={gamemode == 1 ? value.data()?.status : offlineStatus}
+                            position={gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]}
                             onPieceDrop={onDrop}
                             customDropSquareStyle={{ boxShadow: 'inset 0 0 1px 6px rgba(255,200,100,0.75)' }}
                             animationDuration={500}
@@ -828,16 +830,17 @@ function DisplayChess() {
             <GetModal
                 votes={valueVote?.data()}
                 open={isOpen}
-                close={onClose}
+                close={() => {if(socket) {socket.emit('showVotes');} onClose()}}
                 iniFR={initialRef}
                 finFR={finalRef}
+                soc={socket}
             />
         </VStack>
     )
 }
 
 // votes modal
-function GetModal({ votes, open, close, iniFR, finFR }) {
+function GetModal({ votes, open, close, iniFR, finFR, soc }) {
     let keys = 0;
     return (
         <Modal
