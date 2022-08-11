@@ -218,7 +218,8 @@ function DisplayChess() {
         setOfflineGame(new Chess());
         setOfflineStatus(new Chess().fen().split(' ')[0]);
         setSquareStyle({});
-        if (socket) socket.emit('currentBoard', { status: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR' });
+        if (socket) 
+            socket.emit('currentBoard', { status: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR' });
     }
 
     const restoreScreenBoard = () => {
@@ -261,6 +262,8 @@ function DisplayChess() {
                 status: '',
                 move: (sourceSquare + ' ' + targetSquare)
             });
+
+            console.log('Player MOVE: ' + sourceSquare + ' - ' + targetSquare);
         }
 
         // update state
@@ -271,18 +274,17 @@ function DisplayChess() {
         if (offlineGame.game_over()) {
             notify('🏆 WHITE WON');
             setTimeout(() => resetOfflineGame(), 1000);
-            // resetOfflineGame();
-            return true;
-        }
+            return false;
+        }else {
+            // if the AI is in check
+            if (offlineGame.in_check()) {
+                let sq1 = getkingSquare(offlineGame.fen().split(' ')[0], 'k');
+                console.log('K: ' + sq1);
+                setSquareStyle(current => ({ ...current, [sq1]: { backgroundColor: '#ff4444' } }));
+            }
 
-        // if the AI is in check
-        if (offlineGame.in_check()) {
-            let sq1 = getkingSquare(offlineGame.fen().split(' ')[0], 'k');
-            console.log('K: ' + sq1);
-            setSquareStyle(current => ({ ...current, [sq1]: { backgroundColor: '#ff4444' } }));
+            setTimeout(() =>  blackMove(), 1000);
         }
-
-        setTimeout(() => blackMove(), 1000);
 
         return true;
     }
@@ -319,15 +321,16 @@ function DisplayChess() {
             [vote.split('_')[1]]: { backgroundColor: '#ffc107' },
         });
 
-        setTimeout(() => {
-            if (socket) {
-                socket.emit('newStatus', {
-                    status: '',
-                    move: (vote.split('_')[0] + ' ' + vote.split('_')[1])
-                });
-            }
-        }, 500);
+    
+        if (socket) {
+            socket.emit('newStatus', {
+                status: '',
+                move: (vote.split('_')[0] + ' ' + vote.split('_')[1])
+            });
 
+            console.log('AI MOVE: ' + vote.split('_')[0] + ' - ' + vote.split('_')[1]);
+        }
+    
         setOfflineStatus(offlineGame.fen().split(' ')[0]);
 
         // if the game has ended via checkmate, stalemate, draw, threefold repetition, or insufficient material. 
@@ -335,14 +338,15 @@ function DisplayChess() {
         if (offlineGame.game_over()) {
             notify('🏆 BLACK WON');
             setTimeout(() => resetOfflineGame(), 1000);
-            return true;
+            return false;
         } else {
-            // if the player is in check 
             if (offlineGame.in_check()) {
                 let sq1 = getkingSquare(offlineGame.fen().split(' ')[0], 'K');
                 console.log('K: ' + sq1);
                 setSquareStyle(current => ({ ...current, [sq1]: { backgroundColor: '#ff4444' } }));
             }
+
+            return true;
         }
     }
 
