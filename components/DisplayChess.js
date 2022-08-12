@@ -40,7 +40,6 @@ function DisplayChess() {
 
     // VARIABLE DECLARATIONS
     // demo info
-    // const [playing, setPlaying] = useState(false);
     let playing = false;
     const setPlaying = (value) => { playing = value; }
     
@@ -115,7 +114,7 @@ function DisplayChess() {
     // check if connected to the screens
     useEffect(() => {
         if (socket !== null) {
-            setEnableCon(true); setConStat('Connected');
+            setEnableCon(true); setConStat('Connected'); socket.emit('demoKill');
         } else {
             setEnableCon(false); setConStat('Disconnected');
         }
