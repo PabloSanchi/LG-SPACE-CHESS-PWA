@@ -1,3 +1,9 @@
+[![github-languages-image](https://img.shields.io/github/languages/top/PabloSanchi/LG-SPACE-CHESS-PWA.svg?color=red)]()
+[![github-language-count-image](https://img.shields.io/github/languages/count/PabloSanchi/LG-SPACE-CHESS-PWA.svg)]()
+[![Issues](https://img.shields.io/github/issues/PabloSanchi/LG-SPACE-CHESS-PWA.svg)](https://github.com/PabloSanchi/LG-SPACE-CHESS-PWA/issues)
+[![github-repo-size-image](https://img.shields.io/github/repo-size/PabloSanchi/LG-SPACE-CHESS-PWA.svg?color=yellow)]()
+
+
 # LG SPACE CHESS PWA
 Liquid Galaxy Space Chess PWA is the web/apk controller for the Space Chess Visualization project that runs in the rig/cluster.
 
