@@ -40,7 +40,9 @@ function DisplayChess() {
 
     // VARIABLE DECLARATIONS
     // demo info
-    const [playing, setPlaying] = useState(false);
+    // const [playing, setPlaying] = useState(false);
+    let playing = false;
+    const setPlaying = (value) => { playing = value; }
     
     // theme color
     const bgColor = useColorModeValue('gray.50', 'whiteAlpha.50');
