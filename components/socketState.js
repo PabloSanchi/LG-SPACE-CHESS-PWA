@@ -5,6 +5,7 @@ import { Chess } from "chess.js";
 const { setGlobalState, useGlobalState } = createGlobalState({
     playing: false,
     offlineGame: new Chess(),
+    gamemode: 1,
     squareStyle: {},
     socket: null,
 });

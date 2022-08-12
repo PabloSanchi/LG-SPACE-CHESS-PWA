@@ -55,7 +55,9 @@ function DisplayChess() {
 
     // game mode
     let parseLetter = { 1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h' };
-    const [gamemode, setGamemode] = useState(1);
+    // const [gamemode, setGamemode] = useState(1);
+    const [gamemode] = useGlobalState('gamemode');
+    const setGamemode = (mode) => { setGlobalState('gamemode', mode);}
     
     // const [squareStyle, setSquareStyle] = useState({});
     const [squareStyle] = useGlobalState('squareStyle');
@@ -125,6 +127,9 @@ function DisplayChess() {
     useEffect(() => {
         // gamemode == 1 ? value.data()?.status : offlineStatus
         if (!playing && socket && value?.data()?.status !== undefined) {
+            console.log('gamemode: ' + gamemode);
+            console.log((gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0]));
+            
             socket.emit('currentBoard', {
                 status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0])
             });
@@ -153,14 +158,14 @@ function DisplayChess() {
     /*
     handle black pieces move when value().data.status changes
     */
-    useEffect(() => {
-        if (socket) {
-            socket.emit('newStatus', {
-                status: value?.data()?.status,
-                move: ''
-            });
-        }
-    }, [value?.data()?.status]);
+    // useEffect(() => {
+    //     if (socket && gamemode == 1) {
+    //         socket.emit('newStatus', {
+    //             status: value?.data()?.status,
+    //             move: ''
+    //         });
+    //     }
+    // }, [value?.data()?.status]);
 
 
     /*
