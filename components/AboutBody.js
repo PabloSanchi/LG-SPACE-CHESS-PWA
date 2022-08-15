@@ -1,18 +1,13 @@
 import React from 'react'
 import { VStack, Text, HStack, Box, Icon, Flex, Link, Divider  } from '@chakra-ui/react';
-import Head from 'next/head'
-import Header from '../components/Header';
 import Image from 'next/image';
-import LQlogo from '../public/logoLg2.png';
-import Gsoc from '../public/logoGsoc.png';
+
 import Spl from '../public/Spl2.png';
 import Spl2 from '../public/Spl3.png';
 import logos from '../public/logos.png';
 
 import { useColorModeValue } from '@chakra-ui/react';
-import { setGlobalState, useGlobalState } from '../components/socketState';
 import { FaGithub, FaEnvelope, FaLinkedinIn } from 'react-icons/fa';
-
 
 function SocialMediaButton({ where, icon, text }) {
     return (
@@ -29,9 +24,6 @@ function AboutBody() {
 
     return (
         <VStack>
-            {/* Project logo */}
-            {/* <Image width={600} height={250} src={mainLogo} alt="main logo"></Image> */}
-            {/* <Divider mb={3} w={120} orientation='horizontal' /> */}
             {/* Author name */}
             <Text mt={3} fontSize='xl' fontWeight='bold'>Author: Pablo {`Sanchidri\u00E1n`}</Text>
             <Divider w={120} orientation='horizontal' />
