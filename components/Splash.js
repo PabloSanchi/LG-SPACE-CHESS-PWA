@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import logos from '../public/logos.png';
-import { Center, Flex, Text } from '@chakra-ui/react';
+import { Center, VStack, HStack, Box, Flex, Text } from '@chakra-ui/react';
 
 
 function Splash({ setShown }) {
@@ -11,21 +11,17 @@ function Splash({ setShown }) {
       setShown(true);
     }, 1000);
   });
-  
+
   return (
-    <Center  style={{
-      position: 'relative'
-    }}
-    p={10} direction='column' justify='center' align='center' >
-      <Image style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        // transform  : 'translate(-50%, -50%)'
-      }}
-      width={764} height={594} src={logos} alt="main logo"></Image>
-    </Center>
+    <Flex mt={{base: '10rem', md: '8rem', lg: '1rem'}} direction="column" alignItems="center" >
+      <VStack
+        spacing={8}
+        alignItems="start"
+      >
+        <Image width={764} height={600} src={logos} alt="main logo"></Image>
+      </VStack>
+    </Flex> 
   )
 }
 
-export default Splash;
+      export default Splash;

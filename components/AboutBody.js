@@ -43,7 +43,7 @@ function AboutBody() {
             </VStack>
             <Divider w={120} orientation='horizontal' />
             {/* Author contact */}
-            <Text fontSize='xl' >Author Contact info:</Text>
+            <Text fontWeight='bold' fontSize='xl' >Author Contact info:</Text>
             <Box display={{ base: 'block', md: 'block' }} flexBasis={{ base: '100%', md: 'auto' }} mb={5} >
                 <Flex
                     align="center"
@@ -61,7 +61,7 @@ function AboutBody() {
             
             {/* Logos */}
             <Box mt={3}>
-                <Image padding={5} width={764} height={594} src={logos} alt="main logo"></Image>
+                <Image padding={5} width={764} height={600} src={logos} alt="main logo"></Image>
             </Box>
             
             {/* Project Description */}

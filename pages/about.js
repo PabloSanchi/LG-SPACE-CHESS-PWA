@@ -21,7 +21,7 @@ function about() {
 
             <AboutBody />
             <Flex h={10} align='center' textAlign='center' backgroundColor="black" noOfLines={2}>
-                <Text color="white" >@Liquid Galaxy Space Chess 2022</Text> 
+                <Text color="white" >Liquid Galaxy Space Chess</Text> 
             </Flex>
         </div>
     )
