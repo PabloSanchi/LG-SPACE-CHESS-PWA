@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { VStack, Button, Flex } from '@chakra-ui/react';
-import { Map, Marker, ZoomControl } from "pigeon-maps"
+import { Map, Marker, ZoomControl, Overlay  } from "pigeon-maps"
 
 const satellite = require('satellite.js');
 
@@ -123,12 +123,15 @@ function DisplaySat() {
                         minZoom={3}
                     >
                         <ZoomControl />
-                        <Marker
+                        {/* <Marker
                             color={color}
                             width={50}
                             anchor={coord}
                             onClick={() => setHue(hue + 20)} 
-                        />
+                        /> */}
+                        <Overlay anchor={coord} offset={[50, 50]} >
+                            <img width={90} height={90} src="/satimage.png" alt="satimage" />
+                        </Overlay> 
                     </Map>
                 </Flex>
             }
