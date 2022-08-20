@@ -682,7 +682,7 @@ function DisplayChess() {
                         // status: (gamemode == 1 ? value.data()?.status : offlineGame.fen().split(' ')[0])
                     });
                 }
-                notify('demo killed');
+                notify('demo ended');
                 // setGamemode(1);
                 // restoreScreenBoard();
             }, 1250);
