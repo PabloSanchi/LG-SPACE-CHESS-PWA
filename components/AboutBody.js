@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Spl from '../public/Spl2.png';
 import Spl2 from '../public/Spl3.png';
 import logos from '../public/logos.png';
+import logo from '../public/noSpace.png';
 
 import { useColorModeValue } from '@chakra-ui/react';
 import { FaGithub, FaEnvelope, FaLinkedinIn } from 'react-icons/fa';
@@ -24,8 +25,14 @@ function AboutBody() {
 
     return (
         <VStack>
+            {/* WEB LOGO */}
+            <Image width={350} height={150} src={mainLogo} alt="main logo"></Image>
+            <Divider w={120} orientation='horizontal' />
             {/* Author name */}
             <Text mt={3} fontSize='xl' fontWeight='bold'>Author: Pablo {`Sanchidri\u00E1n`}</Text>
+            <Divider w={120} orientation='horizontal' />
+            {/* Liquid galaxy tester */}
+            <Text mt={3} fontSize='xl' fontWeight='bold'>Lleida Liquid Galaxy Lab<br/> Support: Pau Francino</Text>
             <Divider w={120} orientation='horizontal' />
             {/* Mentor name */}
             <VStack fontSize='xl' fontWeight='bold'>
@@ -53,13 +60,13 @@ function AboutBody() {
             
             {/* Logos */}
             <Box mt={3}>
-                <Image padding={5} width={764} height={600} src={logos} alt="main logo"></Image>
+                <Image padding={5} width={650-100} height={493-100} src={logo} alt="main logo"></Image>
             </Box>
             
             {/* Project Description */}
             <Divider w={120} orientation='horizontal' />
             <Text fontSize={{base: '18px', md: '20px', lg: '25px'}} maxW={'3xl'} p={5} >
-                A Newspace-related visualization project in collaboration with Hydra-Space.
+                A Newspace-related visualization project in collaboration with Hydra-Space & Hybridium.
                 The basic idea is to use the Liquid Galaxy cluster to visualize a world chess game that will happen
                 with people worldwide and through satellite communications, a world&apos;s first !!!
                 <br /><br />

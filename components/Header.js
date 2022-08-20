@@ -7,7 +7,7 @@ import {
     ModalBody, FormControl,
     FormLabel, Input,
     ModalFooter, useDisclosure,
-    HStack, VStack, useColorMode, useColorModeValue
+    HStack, VStack, useColorMode, useColorModeValue, AlertDialogCloseButton
 } from '@chakra-ui/react';
 
 import { CloseIcon, HamburgerIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
@@ -25,10 +25,24 @@ import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 import { setGlobalState, useGlobalState } from '../components/socketState';
 import { io } from "socket.io-client";
 
+
+import {
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
+} from '@chakra-ui/react'
+
+
 const Header = (props) => {
 
+    const [showPlaying] = useGlobalState('showPlaying');
+    // const setShowPlaying = (value) => { setGlobalState('showPlaying', value); }
+
     // we do not use useState so it wont refresh the page (it will quit the modal!)
-    var lqIp = "";
+    var lqIp = '';
     // color Mode
     const { toggleColorMode } = useColorMode();
     // #DAA520
@@ -95,6 +109,8 @@ const Header = (props) => {
             notify('❌ Retry');
         });
 
+        lqIp = '';
+
         onClose();
     }
 
@@ -103,21 +119,31 @@ const Header = (props) => {
     */
     const handleConnect = async () => {
 
-        
         console.log(socket);
         if (socket !== null) {
             handleDisconnect();
             return;
         }
 
-        // console.log('IP: ' + userDoc.data()?.lqrigip);
         let ipAux = '';
 
         try {
-            const docRef = doc(db, 'rig', userDoc.data()?.lqrigip);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) ipAux = docSnap.data()?.ip;
-            else return;
+
+            if (lqIp !== '' && isIPV4Address(lqIp)) {
+                ipAux = lqIp;
+                await handleSaveIp();
+
+                const docRef = doc(db, 'rig', ipAux);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) ipAux = docSnap.data()?.ip;
+                else return;
+
+            } else {
+                const docRef = doc(db, 'rig', userDoc.data()?.lqrigip);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) ipAux = docSnap.data()?.ip;
+                else return;
+            }
 
             console.log('Connecting to: ', ipAux);
 
@@ -156,6 +182,7 @@ const Header = (props) => {
             // router.reload(window.location.pathname)
         }
 
+        lqIp = '';
         onClose();
     }
 
@@ -203,7 +230,7 @@ const Header = (props) => {
      */
     const resetScreens = () => {
         console.log('reseting screens');
-        if(socket) {
+        if (socket) {
             socket.emit('killAll');
         }
     }
@@ -224,33 +251,37 @@ const Header = (props) => {
                         <FormControl>
                             <FormLabel>LGRig IP</FormLabel>
                             <HStack>
-                                <Input placeholder='e.g. 192.168.0.1' onChange={(e) => lqIp = e.target.value} />
+                                <Input placeholder={userDoc?.data()?.lqrigip ? userDoc?.data()?.lqrigip : 'e.g. 192.168.0.1'} onChange={(e) => lqIp = e.target.value} />
                                 <Button color="white" backgroundColor="orange.300" mr={3} onClick={handleSaveIp}>
-                                        Save
+                                    Save
                                 </Button>
                             </HStack>
                         </FormControl>
-                        
+
+                        <FormControl mt={2}>
+                            <FormLabel>LG Logos</FormLabel>
+                            <Button onClick={hideLogos}>Hide/Show</Button>
+                        </FormControl>
+
                         <FormControl mt={2}>
                             <FormLabel>Reboot Rig</FormLabel>
-                            <Button colorScheme='yellow' onClick={reboot}>Reboot</Button>
+                            <CustomAskButton disbled={false} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={handleSignOut} name="Reboot" />
                         </FormControl>
 
                         <FormControl mt={2}>
                             <FormLabel>Poweroff Rig</FormLabel>
-                            <Button colorScheme='red' onClick={poweroff}>Poweroff</Button>
+                            <CustomAskButton disbled={false} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={poweroff} name="Poweroff" />
                         </FormControl>
-                        
+
                     </ModalBody>
 
                     <ModalFooter>
                         <VStack>
                             <HStack>
-                                <Button colorScheme='red' onClick={resetScreens}>Hard Reset</Button>
+                                {/* <Button colorScheme='red' onClick={resetScreens}>Hard Reset</Button> */}
                                 <Button colorScheme={socket == null ? 'green' : 'red'} onClick={handleConnect} >
                                     {socket != null ? 'Disconnect' : 'Connect'}
                                 </Button>
-
                                 <Button onClick={onClose}>Close</Button>
                             </HStack>
                         </VStack>
@@ -293,10 +324,10 @@ const Header = (props) => {
                         <Flex align="center" gap={1}> LG SPACE CHESS</Flex>
                     </Text>
 
-                    <Text>{user?.email ? 
-                        (user.displayName.length > 17 ? 
-                            user.displayName.substring(0,17) + '...' : 
-                            user.displayName) 
+                    <Text>{user?.email ?
+                        (user.displayName.length > 17 ?
+                            user.displayName.substring(0, 17) + '...' :
+                            user.displayName)
                         : ' '}
                     </Text>
                 </Box>
@@ -329,11 +360,14 @@ const Header = (props) => {
                         {themeLogo}
                     </Box>
 
-                    <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={() => { router.push('/') }} name="Board" />
-                    <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={() => { router.push('/findsat') }} name="FindSat" />
-                    <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={onOpen} name="LGSettings" />
-                    <CustomButton bgColor={ButtonBg} mbVal={2} mrVal={3} foo={handleSignOut} name="SignOut" />
-                    <CustomButton bgColor={ButtonBg} mbVal={0} mrVal={0} foo={() => { router.push('/about') }} name="About" />
+                    <CustomButton disabled={showPlaying} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={() => { router.push('/') }} name="Board" />
+                    <CustomButton disabled={showPlaying} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={() => { router.push('/findsat') }} name="FindSat" />
+                    <CustomButton disabled={showPlaying} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={onOpen} name="LGSettings" />
+
+                    {/* <CustomSignOut scheme='blue' name='SignOut' foo={handleSignOut} /> */}
+                    <CustomAskButton disabled={showPlaying} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={handleSignOut} name="SignOut" />
+
+                    <CustomButton disabled={showPlaying} bgColor={ButtonBg} mbVal={0} mrVal={0} foo={() => { router.push('/about') }} name="About" />
                 </Flex>
             </Box>
 
@@ -342,9 +376,56 @@ const Header = (props) => {
     );
 };
 
-function CustomButton({ bgColor, mbVal, mrVal, foo, name }) {
+function CustomAskButton({ disabled, bgColor, mbVal, mrVal, foo, name }) {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const cancelRef = useRef()
+
+    return (
+        <>
+            <Button
+                disabled={disabled}
+                color={(name != 'Poweroff' && name != 'Reboot' && bgColor == "white" ? "orange.800" : "white")}
+                backgroundColor={(name == 'Poweroff' || name == 'Reboot' ? 'orange': bgColor)}
+                width={name == 'Poweroff' || name == 'Reboot' ? 'auto' : '100%'}
+                mb={{ base: mbVal, sm: 0 }}
+                mr={{ base: 0, sm: mrVal }}
+                onClick={onOpen}
+            >{name}
+            </Button>
+            <AlertDialog
+                motionPreset='scale'
+                leastDestructiveRef={cancelRef}
+                onClose={onClose}
+                isOpen={isOpen}
+                isCentered
+            >
+                <AlertDialogOverlay />
+
+                <AlertDialogContent>
+                    <AlertDialogHeader>Wish to proceed?</AlertDialogHeader>
+                    <AlertDialogCloseButton />
+                    <AlertDialogBody>
+                        You are about to {name.toLowerCase()}
+                    </AlertDialogBody>
+                    <AlertDialogFooter>
+                        <Button ref={cancelRef} onClick={onClose}>
+                            No
+                        </Button>
+                        <Button colorScheme='red' ml={3} onClick={foo}>
+                            Yes
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
+    )
+}
+
+
+function CustomButton({ disabled, bgColor, mbVal, mrVal, foo, name }) {
     return (
         <Button
+            disabled={disabled}
             color={bgColor == "white" ? "orange.800" : "white"}
             backgroundColor={bgColor}
             width="100%"

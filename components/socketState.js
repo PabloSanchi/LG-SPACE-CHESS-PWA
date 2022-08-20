@@ -4,6 +4,10 @@ import { Chess } from "chess.js";
 
 const { setGlobalState, useGlobalState } = createGlobalState({
     playing: false,
+    index: 0,
+    demoStatus: 'start',
+    moves: [],
+    showPlaying: false,
     offlineGame: new Chess(),
     gamemode: 1,
     squareStyle: {},

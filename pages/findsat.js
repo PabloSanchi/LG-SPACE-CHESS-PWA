@@ -27,7 +27,6 @@ function findsat() {
             <meta content='yes' name='apple-mobile-web-app-capable'/>
             <meta content='yes' name='mobile-web-app-capable'/>
           </Head>
-          {/* <Header /> */}
           <Map />
         </div>
       )

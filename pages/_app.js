@@ -3,7 +3,7 @@ import { ChakraProvider, ColorModeProvider, useColorMode } from '@chakra-ui/reac
 import Login from '../components/Login';
 import { auth } from '../firebase'
 import { useAuthState } from 'react-firebase-hooks/auth';
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import Header from '../components/Header';
 import theme from '../utils/theme';
 import logos from '../public/logos.png';

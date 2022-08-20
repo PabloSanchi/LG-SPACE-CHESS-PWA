@@ -12,9 +12,6 @@ const ChessGui = dynamic(() => import('../components/DisplayChess'), {
 
 export default function Home() {
   
-  const changeVal = () => {
-    setGlobalState('color', 'red');
-  }
 
   return (
     <div>

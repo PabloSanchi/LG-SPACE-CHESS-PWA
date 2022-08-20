@@ -5,7 +5,6 @@ import Head from 'next/head'
 import AboutBody from '../components/AboutBody';
 
 
-
 function about() {
 
     return (

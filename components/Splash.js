@@ -16,9 +16,9 @@ function Splash({ setShown }) {
     <Flex mt={{base: '10rem', md: '8rem', lg: '1rem'}} direction="column" alignItems="center" >
       <VStack
         spacing={8}
-        alignItems="start"
+        alignItems="center"
       >
-        <Image width={764} height={600} src={logos} alt="main logo"></Image>
+        <Image width={764-200} height={758-200} src={logos} alt="main logo"></Image>
       </VStack>
     </Flex> 
   )
