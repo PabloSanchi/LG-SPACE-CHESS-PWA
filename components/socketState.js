@@ -6,6 +6,7 @@ const { setGlobalState, useGlobalState } = createGlobalState({
     playing: false,
     index: 0,
     demoStatus: 'start',
+    demoGame: new Chess(),
     moves: [],
     showPlaying: false,
     offlineGame: new Chess(),

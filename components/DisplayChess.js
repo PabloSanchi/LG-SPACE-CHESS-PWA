@@ -65,6 +65,9 @@ function DisplayChess() {
 
 
     const currentStatus = useRef(new Chess());
+    
+    const [demoGame] = useGlobalState('demoGame');
+    const setDemoGame = (value) => { setGlobalState('demoGame', value); }
 
     const pointer = useRef(0);
     const setPointer = (value) => { pointer.current = value; }
@@ -163,7 +166,9 @@ function DisplayChess() {
             
             pointer.current = index;
             demo.current = moves;
-            currentStatus.current = new Chess(demoStatus);
+
+            currentStatus.current = demoGame;
+            // currentStatus.current = new Chess(demoStatus);
 
             console.log('index: ', index);
             console.log('pointer: ', pointer.current);
@@ -253,6 +258,7 @@ function DisplayChess() {
             });
 
             setDemoStatus(currentStatus.current.fen());
+            setDemoGame(currentStatus.current);
 
             if(socket) {
                 socket.emit('demoMove', {
@@ -277,6 +283,7 @@ function DisplayChess() {
         
         currentStatus.current.undo();
         setDemoStatus(currentStatus.current.fen());
+        setDemoGame(currentStatus.current);
 
         if(socket) {
             socket.emit('demoBack', {
@@ -311,6 +318,7 @@ function DisplayChess() {
         });
 
         setDemoStatus(currentStatus.current.fen());
+        setDemoGame(currentStatus.current);
 
         if(socket) {
             socket.emit('demoMove', {
@@ -703,7 +711,7 @@ function DisplayChess() {
 
         return (
             <>
-                <Button display={disp} disabled={show} ref={btnRef} mt={10} m={1} size='sm' colorScheme={color} onClick={onOpen} >Top Plays</Button>
+                <Button display={disp} disabled={show} ref={btnRef} mt={10} m={1} size='md' colorScheme={color} onClick={onOpen} >Top Plays</Button>
                 <Drawer
                     isOpen={isOpen}
                     placement='right'
@@ -724,18 +732,13 @@ function DisplayChess() {
                                         transition: 'transform 0.2s ease-in-out'
                                     }}
                                     onClick={() => {
-                                        // if (socket) {
-                                            notify('▶️ ' + num);
-                                            setPlaying(true);
-                                            setShowPlaying(true);
-                                            currentStatus.current = new Chess();
-                                            setDemoStatus(new Chess());
-                                            startDemo(requests[num]);
-                                            setGamemode(3);
-                                            // console.log(requests[num]);
-                                            // socket.emit('demoContent', requests[num]);
-                                            onClose();
-                                        // } else notify('❌ Not Connected');
+                                        notify('▶️ ' + num);
+                                        setPlaying(true); setShowPlaying(true);
+                                        currentStatus.current = new Chess();
+                                        setDemoGame(currentStatus.current);
+                                        setDemoStatus(new Chess()); startDemo(requests[num]);
+                                        setGamemode(3);
+                                        onClose();
                                     }}
                                 >
                                     {`${num}`}
@@ -764,7 +767,7 @@ function DisplayChess() {
 
         return (
             <>
-                <Button display={disp} disabled={show} mt={10} m={1} w={20} size='sm' colorScheme={color} onClick={onOpen} >Mode</Button>
+                <Button display={disp} disabled={show} mt={10} m={1} w={20} size='md' colorScheme={color} onClick={onOpen} >Mode</Button>
                 <Drawer placement={'right'} onClose={onClose} isOpen={isOpen}>
                     <DrawerOverlay />
                     <DrawerContent>
@@ -950,21 +953,21 @@ function DisplayChess() {
                     <Flex mt={{ base: 2, md: 2, lg: 12 }} direction='column' align='center' ml={2} >
 
                         <HStack m={1}>
-                            <Button display={socket ? 'block' : 'none'} m={1} size='sm' colorScheme='red' onClick={restoreScreenBoard}>RESTORE</Button>
-                            <Button m={1} size='sm' colorScheme='orange' onClick={() => { if (socket && valueVote?.data()) { socket.emit('showVotes', valueVote?.data()); } onOpen(); }}>Votes</Button>
+                            <Button display={socket ? 'block' : 'none'} m={1} size='md' colorScheme='red' onClick={restoreScreenBoard}>RESTORE</Button>
+                            <Button m={1} size='md' colorScheme='orange' onClick={() => { if (socket && valueVote?.data()) { socket.emit('showVotes', valueVote?.data()); } onOpen(); }}>Votes</Button>
                             <DrawerDemo disp='block' color='orange' />
                         </HStack>
                         {/* LGRig Controller */}
                         {/* gamemode and demo */}
                         <HStack m={1}>
                             <PlacementSetting disp='block' color='orange' />
-                            <Button size='sm' colorScheme='red' disabled={gamemode != 2} onClick={resetOfflineGame} >Reset</Button>
+                            <Button size='md' colorScheme='red' disabled={gamemode != 2} onClick={resetOfflineGame} >Reset</Button>
                         </HStack>
 
                         {/* View options */}
                         <HStack display={enabledCon ? 'flex' : 'none'} m={1}>
-                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} size='sm' colorScheme='orange' onClick={() => sendInstruction('showChess')}>Chess</Button>
-                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} size='sm' colorScheme='orange' onClick={() => sendInstruction('showEarth')}>Earth</Button>
+                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} size='md' colorScheme='orange' onClick={() => sendInstruction('showChess')}>Chess</Button>
+                            <Button display={enabledCon ? 'block' : { base: 'none', md: 'block', lg: 'block' }} disabled={!enabledCon} mt={10} m={1} w={20} size='md' colorScheme='orange' onClick={() => sendInstruction('showEarth')}>Earth</Button>
                         </HStack>
 
                         {/* right joystick only for large view */}
