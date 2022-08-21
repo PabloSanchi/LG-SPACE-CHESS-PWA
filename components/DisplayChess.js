@@ -917,7 +917,7 @@ function DisplayChess() {
                         }
 
                         {/* PLAYER */}
-                        <Flex mt={3} align="center" justify='center' direction={['column', 'row', 'row']} gap={2}>
+                        <Flex display={gamemode == 3 ? 'flex' : 'none'} mt={3} align="center" justify='center' direction={['column', 'row', 'row']} gap={2}>
                             <HStack>
                                 <IconButton size="md" w={12} onClick={backward} icon={<ArrowLeftIcon w={8} h={8} />} />
                                 <Button fontSize={30} w={12} size="md" onClick={() => {
