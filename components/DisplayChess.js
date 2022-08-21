@@ -896,7 +896,7 @@ function DisplayChess() {
 
                         {userDoc && value &&
                             <Chessboard
-                                boardWidth={isMobile ? (dimensions.width - 20 > 420 ? 340 : dimensions.width - 20) : 420}
+                                boardWidth={isMobile ? (dimensions.width - 20 > 420 ? 375 : dimensions.width - 20) : 420}
                                 position={
                                     gamemode == 1 ? 
                                     value.data()?.status :

@@ -344,11 +344,11 @@ const Header = (props) => {
                 </Text>
             </HStack>
 
-            <Box display={{ base: 'block', md: 'none' }} onClick={toggleMenu}>
+            <Box display={{ base: 'block', md: 'block', lg: 'none'}} onClick={toggleMenu}>
                 {show ? <CloseIcon w={3} h={8} /> : <HamburgerIcon w={5} h={10} />}
             </Box>
 
-            <Box display={{ base: show ? 'block' : 'none', md: 'block' }} flexBasis={{ base: '100%', md: 'auto' }} >
+            <Box mt={{base: 2, md: 2, lg: 0}} display={{ base: show ? 'block' : 'none', md: show ? 'block' : 'none', lg: 'block' }} flexBasis={{ base: '100%', md: '100%', lg: 'auto' }} >
                 <Flex
                     align="center"
                     justify={['center', 'space-between', 'flex-end', 'flex-end']}
