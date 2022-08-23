@@ -9,7 +9,7 @@ function Splash({ setShown }) {
   useState(() => {
     setTimeout(() => {
       setShown(true);
-    }, 1000);
+    }, 2000);
   });
 
   return (

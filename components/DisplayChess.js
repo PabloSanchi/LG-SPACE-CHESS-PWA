@@ -36,7 +36,6 @@ import { CloseIcon } from '@chakra-ui/icons';
 
 import { ArrowLeftIcon, ArrowRightIcon } from '@chakra-ui/icons';
 
-
 function DisplayChess() {
     
     // VARIABLE DECLARATIONS
