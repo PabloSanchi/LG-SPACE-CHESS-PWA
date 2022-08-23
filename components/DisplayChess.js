@@ -910,7 +910,7 @@ function DisplayChess() {
                                 }
                                 onPieceDrop={onDrop}
                                 customDropSquareStyle={{ boxShadow: 'inset 0 0 1px 6px rgba(255,200,100,0.75)' }}
-                                animationDuration={500}
+                                animationDuration={300}
                                 customArrows={arrow === null || gamemode != 1 ? [] : [arrow]}
                                 customBoardStyle={{ borderRadius: '5px' }}
                                 customSquareStyles={gamemode == 2 ?
@@ -938,7 +938,7 @@ function DisplayChess() {
                                 <Button size="md" w={12} fontSize={30} onClick={() => setAnimationSpeed(700)} >
                                     <Icon w={12} h={12} as={TbMultiplier1X} />
                                 </Button>
-                                <Button size="md" w={12} fontSize={30} onClick={() => setAnimationSpeed(250)} >
+                                <Button size="md" w={12} fontSize={30} onClick={() => setAnimationSpeed(400)} >
                                     <Icon w={12} h={12} as={TbMultiplier2X} />
                                 </Button>
                             </HStack>
