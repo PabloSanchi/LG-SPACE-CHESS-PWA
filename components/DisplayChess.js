@@ -103,6 +103,8 @@ function DisplayChess() {
     const [offlineGame] = useGlobalState('offlineGame');
     const setOfflineGame = (game) => { setGlobalState('offlineGame', game); }
     const [offlineStatus, setOfflineStatus] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+    
+    const [difficulty, setDifficulty] = useState(1);
 
     // user data
     const [user, loadingUser] = useAuthState(auth); // user
@@ -488,7 +490,7 @@ function DisplayChess() {
 
         // make AI move
         let response = new Game(offlineGame.fen());
-        let move = response.aiMove(3);
+        let move = response.aiMove(difficulty);
         let key = Object.keys(move)[0];
         let vote = `${key.toLowerCase()}_${move[key].toLowerCase()}`;
 
@@ -889,11 +891,12 @@ function DisplayChess() {
                                         ?
                                         (value.data()?.turn == 'w' ? ' You' : ' Satellite')
                                         :
-                                        (gamemode == 2 ? (offlineGame.turn() == 'w' ? ' You' : ' Opponent') : 'TOP PLAY')
+                                        (gamemode == 2 ? (offlineGame.turn() == 'w' ? ' You' : ' Opponent') : ' TOP PLAY')
                                     }
                                 </Badge>
                             }
                             {userDoc && gamemode == 1 && <Badge mt={3} colorScheme='none' >Attempts: {userDoc.data()?.limit}</Badge>}
+                            {gamemode == 2 && <Badge mt={3} colorScheme='none' >Difficulty: {difficulty}</Badge>}
                         </HStack>
 
                         {userDoc && value &&
@@ -917,6 +920,12 @@ function DisplayChess() {
                                 }
                             />
                         }
+                        {/* DIFFICULTY SELECTOR */}
+                        <Flex display={gamemode == 2 ? 'flex' : 'none'} mt={3} align="center" justify='center' direction={'row'} gap={2}>
+                            <Button size="md" w={12} colorScheme={difficulty == 1 ? 'orange' : 'gray'} onClick={() => setDifficulty(1)}>Easy</Button>
+                            <Button size="md" colorScheme={difficulty == 2 ? 'orange' : 'gray'} onClick={() => setDifficulty(2)}>Medium</Button>
+                            <Button size="md" colorScheme={difficulty == 3 ? 'orange' : 'gray'} w={12} onClick={() => setDifficulty(3)}>Hard</Button>
+                        </Flex>
 
                         {/* PLAYER */}
                         <Flex display={gamemode == 3 ? 'flex' : 'none'} mt={3} align="center" justify='center' direction={['column', 'row', 'row']} gap={2}>
