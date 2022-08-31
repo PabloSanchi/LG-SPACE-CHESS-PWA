@@ -207,8 +207,8 @@ const Header = (props) => {
         }
     }
 
-    /*
-    poweroff -> poweroff the rig
+    /**
+    * @description poweroff -> poweroff the rig
     */
     const poweroff = () => {
         if (socket) {
@@ -216,8 +216,8 @@ const Header = (props) => {
         }
     }
 
-    /*
-    reboot -> reboot the rig
+    /**
+    * @description reboot -> reboot the rig
     */
     const reboot = () => {
         if (socket) {
@@ -226,8 +226,8 @@ const Header = (props) => {
     }
 
     /**
-     * resetScreens -> Stop everything and reset the screens
-     */
+    * @description resetScreens -> Stop everything and reset the screens
+    */
     const resetScreens = () => {
         console.log('reseting screens');
         if (socket) {
@@ -235,6 +235,10 @@ const Header = (props) => {
         }
     }
 
+    /**
+    * @type component
+    * @description LGStetting modal
+    */
     const GetModal = () => {
         return (
             <Modal

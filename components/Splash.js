@@ -24,4 +24,4 @@ function Splash({ setShown }) {
   )
 }
 
-      export default Splash;
+export default Splash;
