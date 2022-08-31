@@ -31,15 +31,15 @@ function AboutBody() {
             {/* Author name */}
             <Text mt={3} fontSize='xl' fontWeight='bold'>Author: Pablo {`Sanchidri\u00E1n`}</Text>
             <Divider w={120} orientation='horizontal' />
-            {/* Liquid galaxy tester */}
-            <Text mt={3} fontSize='xl' fontWeight='bold'>Lleida Liquid Galaxy Lab<br/> Support: Pau Francino</Text>
-            <Divider w={120} orientation='horizontal' />
             {/* Mentor name */}
             <VStack fontSize='xl' fontWeight='bold'>
                 <Text >Mentors:</Text>
-                <Text>Andreu {`Iba\u00f1ez`}</Text>
                 <Text>{`V\u00EDctor`} {`S\u00E1nchez`}</Text>
+                <Text>Andreu {`Iba\u00f1ez`}</Text>
             </VStack>
+            <Divider w={120} orientation='horizontal' />
+            {/* Liquid galaxy tester */}
+            <Text mt={3} fontSize='xl' fontWeight='bold'>Lleida Liquid Galaxy Lab<br/> Support: Pau Francino</Text>
             <Divider w={120} orientation='horizontal' />
             {/* Author contact */}
             <Text fontWeight='bold' fontSize='xl' >Author Contact info:</Text>
