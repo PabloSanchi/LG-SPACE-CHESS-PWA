@@ -91,6 +91,7 @@ export default function Login() {
             <Box as={"form"} mt={10}>
               <Stack spacing={4}>
                 <Button
+                  borderRadius='100'
                   w={"full"}
                   variant={"outline"}
                   leftIcon={<FcGoogle />}
