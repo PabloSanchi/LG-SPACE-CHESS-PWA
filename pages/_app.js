@@ -25,7 +25,7 @@ function MyApp({ Component, pageProps }) {
 
     if (loading) return (<ChakraProvider></ChakraProvider>)
     if (!user && !loading) return (
-      <ChakraProvider resetCSS theme={theme}>
+      <ChakraProvider resetCSS theme={theme}>  
         <Login />
       </ChakraProvider>
     )
