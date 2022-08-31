@@ -150,7 +150,10 @@ function DisplayChess() {
     // notifications
     const notify = (text) => toast(text);
 
-    // check if connected to the screens
+    
+    /**
+     * @description check if connected to the screens and set default values
+    */
     useEffect(() => {
         
         if (socket !== null) {
@@ -162,6 +165,9 @@ function DisplayChess() {
         setPlaying(false);
     }, [socket]);
 
+    /**
+     * @description if there is an already started play, fetch the already existing data from the global store
+     */
     useEffect(() => {
         if(gamemode == 3) {
             
@@ -175,9 +181,6 @@ function DisplayChess() {
             console.log('pointer: ', pointer.current);
             console.log('currentStatus: ', currentStatus.current);
         }
-        // if(gamemode == 3) {
-        //     setGamemode(1);
-        // }
     }, [])
 
 
@@ -197,7 +200,9 @@ function DisplayChess() {
         }
     }, [socket, value?.data()?.status])
 
-    // fetch arrows (last user vote)
+    /** 
+     * @description fetch arrows (last user vote)
+    */
     useEffect(() => {
 
         const getArrows = async () => {
@@ -231,7 +236,10 @@ function DisplayChess() {
 
     // DEMO MODE -----------------------------------------------------------------
 
-
+    /**
+     * @description create play and initializes it
+     * @param {Object} data 
+     */
     function startDemo(data) {
         setDemo(data.moves); // demo = data.moves;
         setMoves(data.moves);
@@ -245,6 +253,9 @@ function DisplayChess() {
         demoMode();
     }
 
+    /**
+     * @description if it is playing -> pause, if not move forwards if possible
+     */
     function forward() {
         console.log('forward');
         if(demo.current.length == 0) return;
@@ -272,8 +283,11 @@ function DisplayChess() {
         }
     }
 
+    /**
+     * @description if it is playing -> pause, if not move backwards if possible
+     */
     function backward() {
-        console.log('backward');
+        // console.log('backward');
         if(demo.current.length == 0) return;
         if(playing.current) {setPlaying(false); setShowPlaying(false); return; }
         if(pointer.current == 0) return;
@@ -296,9 +310,12 @@ function DisplayChess() {
 
     }
 
+    /**
+     * @description resume the play or pause it
+     */
     function playPause() {
-        console.log('length: ' + demo.current.length);
-        console.log('playing: ' + playing.current);
+        // console.log('length: ' + demo.current.length);
+        // console.log('playing: ' + playing.current);
         if(demo.current.length == 0) return;
 
         setShowPlaying(!playing.current);
@@ -307,20 +324,26 @@ function DisplayChess() {
 
     }
 
+    /**
+     *  @description reproduce demo play, update status and communicates with the screens
+     */
     function demoMode() {
         
         // send move with certain speed
-        console.log('pointer: ' + pointer.current);
+        // console.log('pointer: ' + pointer.current);
 
+        // move piece
         let move = currentStatus.current.move({
             from: demo.current[pointer.current].substring(0,2).toLowerCase(), 
             to: demo.current[pointer.current].substring(2,4).toLowerCase(),
             promotion: 'q',
         });
 
+        // set new state
         setDemoStatus(currentStatus.current.fen());
         setDemoGame(currentStatus.current);
 
+        // if connected, send move to the screens
         if(socket) {
             socket.emit('demoMove', {
                 move: demo.current[pointer.current],
@@ -328,8 +351,10 @@ function DisplayChess() {
             });
         }
 
+        // update pointer value
         setPointer(pointer.current + 1); setIndex(pointer.current); // pointer++;
 
+        // recursive funcion
         setTimeout(() => {
             if(pointer.current < demo.current.length-1 && playing.current) requestAnimationFrame(demoMode);
             else if(pointer.current == demo.current.length-1) killDemo();
@@ -379,7 +404,7 @@ function DisplayChess() {
     }
 
     /**
-     * 
+     * @description Get the king square (W|B king)
      * @param {String} cad
      * @param {Char} target
      * @returns {String}
@@ -491,6 +516,7 @@ function DisplayChess() {
         // make AI move
         let response = new Game(offlineGame.fen());
         let move = response.aiMove(difficulty);
+        console.log(difficulty);
         let key = Object.keys(move)[0];
         let vote = `${key.toLowerCase()}_${move[key].toLowerCase()}`;
 
