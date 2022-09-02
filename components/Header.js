@@ -300,7 +300,7 @@ const Header = (props) => {
                                 </VStack>
                                 <VStack>
                                     <FormLabel>Relaunch Rig</FormLabel>
-                                    <CustomAskButton disbled={false} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={relaunch} name="Relaunch" />
+                                    <CustomAskButton disbled={false} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={relaunch} name="Reboot" />
                                 </VStack>
                             </HStack>
                             
@@ -422,9 +422,9 @@ function CustomAskButton({ disabled, bgColor, mbVal, mrVal, foo, name }) {
         <>
             <Button
                 disabled={disabled}
-                color={(name != 'Poweroff' && name != 'Reboot' && bgColor == "white" ? "orange.800" : "white")}
-                backgroundColor={(name == 'Poweroff' || name == 'Reboot' ? 'orange': bgColor)}
-                width={name == 'Poweroff' || name == 'Reboot' ? 'auto' : '100%'}
+                color={(name != 'Poweroff' && name != 'Reboot' && 'Relaunch' && bgColor == "white" ? "orange.800" : "white")}
+                backgroundColor={(name == 'Poweroff' || name == 'Reboot' || name == 'Relaunch' ? 'orange': bgColor)}
+                width={name == 'Poweroff' || name == 'Reboot' || name == 'Relaunch' ? 'auto' : '100%'}
                 mb={{ base: mbVal, sm: 0 }}
                 mr={{ base: 0, sm: mrVal }}
                 onClick={onOpen}
