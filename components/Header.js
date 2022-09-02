@@ -300,7 +300,7 @@ const Header = (props) => {
                                 </VStack>
                                 <VStack>
                                     <FormLabel>Relaunch Rig</FormLabel>
-                                    <CustomAskButton disbled={false} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={relaunch} name="Reboot" />
+                                    <CustomAskButton disbled={false} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={relaunch} name="Relaunch" />
                                 </VStack>
                             </HStack>
                             
