@@ -61,8 +61,8 @@ Liquid Galaxy Space Chess PWA is the web/apk controller for the Space Chess Visu
 
 - LGSettings:
   - Enter IP (master ip of the cluster)
-  - Save
   - Reboot (Reboot cluster)
+  - Relaunch (Relaunch cluster)
   - Poweroff (Poweroff cluster)
   - Connect
   - Disconnect
