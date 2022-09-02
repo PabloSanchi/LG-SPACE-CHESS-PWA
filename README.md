@@ -3,6 +3,9 @@
 [![Issues](https://img.shields.io/github/issues/PabloSanchi/LG-SPACE-CHESS-PWA.svg)](https://github.com/PabloSanchi/LG-SPACE-CHESS-PWA/issues)
 [![github-repo-size-image](https://img.shields.io/github/repo-size/PabloSanchi/LG-SPACE-CHESS-PWA.svg?color=yellow)]()
 
+# IMPORTANT NOTE
+This is only a brief description of the LG Space Controller.<br>
+[Full Documentation and User Guide here!](./public/Documentation.pdf)
 
 # LG SPACE CHESS PWA
 Liquid Galaxy Space Chess PWA is the web/apk controller for the Space Chess Visualization project that runs in the rig/cluster.
