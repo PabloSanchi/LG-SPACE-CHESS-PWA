@@ -20,7 +20,7 @@ import { useRouter } from 'next/router';
 import { isIPV4Address } from "ip-address-validator";
 import Link from "next/link";
 
-import { MdSpaceDashboard } from 'react-icons/md'
+import { MdNotificationsPaused, MdSpaceDashboard } from 'react-icons/md'
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 import { setGlobalState, useGlobalState } from '../components/socketState';
 import { io } from "socket.io-client";
@@ -120,29 +120,43 @@ const Header = (props) => {
     const handleConnect = async () => {
 
         console.log(socket);
+
         if (socket !== null) {
             handleDisconnect();
             return;
         }
-
+        
         let ipAux = '';
 
         try {
 
-            if (lqIp !== '' && isIPV4Address(lqIp)) {
+            if (lqIp !== '') {
+
+                if (!isIPV4Address(lqIp)) {
+                    notify('❌ Invalid IP Address');
+                    return;
+                }
+
                 ipAux = lqIp;
                 await handleSaveIp();
 
                 const docRef = doc(db, 'rig', ipAux);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) ipAux = docSnap.data()?.ip;
-                else return;
+                else {
+                    notify('IP not found');
+                    return;
+                };
 
             } else {
+        
                 const docRef = doc(db, 'rig', userDoc.data()?.lqrigip);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) ipAux = docSnap.data()?.ip;
-                else return;
+                else {
+                    notify('IP not found');
+                    return;
+                };
             }
 
             console.log('Connecting to: ', ipAux);
@@ -163,7 +177,7 @@ const Header = (props) => {
                 notify('Connected');
                 console.log('Cliente Conectado');
                 console.log(soc.id);
-
+                onClose();
                 // soc.emit('currentBoard', {
                 //     status: value.data().status
                 // });
@@ -183,7 +197,6 @@ const Header = (props) => {
         }
 
         lqIp = '';
-        onClose();
     }
 
     /*
@@ -194,7 +207,7 @@ const Header = (props) => {
             socket.emit('quit');
             socket.disconnect();
             setSocket(null);
-            onClose();
+            // onClose();
         }
     }
 
@@ -222,6 +235,15 @@ const Header = (props) => {
     const reboot = () => {
         if (socket) {
             socket.emit('reboot');
+        }
+    }
+
+    /**
+    * @description reboot -> reboot the rig
+    */
+    const relaunch = () => {
+        if (socket) {
+            socket.emit('relaunch');
         }
     }
 
@@ -255,10 +277,13 @@ const Header = (props) => {
                         <FormControl>
                             <FormLabel>LGRig IP</FormLabel>
                             <HStack>
-                                <Input placeholder={userDoc?.data()?.lqrigip ? userDoc?.data()?.lqrigip : 'e.g. 192.168.0.1'} onChange={(e) => lqIp = e.target.value} />
-                                <Button color="white" backgroundColor="orange.300" mr={3} onClick={handleSaveIp}>
-                                    Save
+                                <Input disabled={socket !== null ? true : false} placeholder={userDoc?.data()?.lqrigip ? userDoc?.data()?.lqrigip : 'e.g. 192.168.0.1'} onChange={(e) => lqIp = e.target.value} />
+                                <Button colorScheme={socket == null ? 'green' : 'red'} onClick={handleConnect} >
+                                    {socket != null ? 'Disconnect' : 'Connect'}
                                 </Button>
+                                {/* <Button color="white" backgroundColor="orange.300" mr={3} onClick={handleSaveIp}>
+                                    Save
+                                </Button> */}
                             </HStack>
                         </FormControl>
 
@@ -268,8 +293,17 @@ const Header = (props) => {
                         </FormControl>
 
                         <FormControl mt={2}>
-                            <FormLabel>Reboot Rig</FormLabel>
-                            <CustomAskButton disbled={false} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={handleSignOut} name="Reboot" />
+                            <HStack>
+                                <VStack>
+                                    <FormLabel>Reboot Rig</FormLabel>
+                                    <CustomAskButton disbled={false} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={reboot} name="Reboot" />
+                                </VStack>
+                                <VStack>
+                                    <FormLabel>Relaunch Rig</FormLabel>
+                                    <CustomAskButton disbled={false} bgColor={ButtonBg} mbVal={2} mrVal={3} foo={relaunch} name="Relaunch" />
+                                </VStack>
+                            </HStack>
+                            
                         </FormControl>
 
                         <FormControl mt={2}>
@@ -283,9 +317,9 @@ const Header = (props) => {
                         <VStack>
                             <HStack>
                                 {/* <Button colorScheme='red' onClick={resetScreens}>Hard Reset</Button> */}
-                                <Button colorScheme={socket == null ? 'green' : 'red'} onClick={handleConnect} >
+                                {/* <Button colorScheme={socket == null ? 'green' : 'red'} onClick={handleConnect} >
                                     {socket != null ? 'Disconnect' : 'Connect'}
-                                </Button>
+                                </Button> */}
                                 <Button onClick={onClose}>Close</Button>
                             </HStack>
                         </VStack>

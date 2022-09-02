@@ -7,6 +7,7 @@ import { Center, VStack, HStack, Box, Flex, Text } from '@chakra-ui/react';
 function Splash({ setShown }) {
 
   useState(() => {
+
     setTimeout(() => {
       setShown(true);
     }, 2000);
