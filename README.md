@@ -4,7 +4,7 @@
 [![github-repo-size-image](https://img.shields.io/github/repo-size/PabloSanchi/LG-SPACE-CHESS-PWA.svg?color=yellow)]()
 
 # IMPORTANT NOTE
-This is only a brief description of the LG Space Controller.<br>
+This is only a brief description of the LG Space Chess Controller.<br>
 [Full Documentation and User Guide here!](./public/Documentation.pdf)
 
 # LG SPACE CHESS PWA
