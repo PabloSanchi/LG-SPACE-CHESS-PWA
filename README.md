@@ -12,9 +12,9 @@ Liquid Galaxy Space Chess PWA is the web/apk controller for the Space Chess Visu
 
 ## Structure
 ### Endpoints
-- Dashboard [Endpoint /]
-- FindSat [Endpoint /findsat]
-- About [Endpoint /about]
+- Dashboard [Endpoint - /]
+- FindSat [Endpoint - /findsat]
+- About [Endpoint - /about]
 
 ### Features
 
@@ -31,7 +31,7 @@ Liquid Galaxy Space Chess PWA is the web/apk controller for the Space Chess Visu
     - Speed x0.5
     - Speed x1
     - Speed x2
-    - Kill demo (stop demo and reset screen)
+    - End demo (stop demo and reset screen)
   - Demo:
     - Selector of top 10 chess plays
   - Mode:
@@ -61,15 +61,17 @@ Liquid Galaxy Space Chess PWA is the web/apk controller for the Space Chess Visu
 
 - LGSettings:
   - Enter IP (master ip of the cluster)
+  - Save
   - Reboot (Reboot cluster)
   - Poweroff (Poweroff cluster)
-  - HardReset (Complete Reset of the cluster, in case of failure)
+  - Connect
+  - Disconnect
 
 - FindSat:
   - Display the current position of the satellite in a map.
 
 - About:
-  - Project logos & author & mentors & contact info & Description
+  - Project logos & author & mentors & tester & contact info & Logos & Description
 
 - Header:
   - Connection semaphore (ON/OFF)
