@@ -160,6 +160,7 @@ const Header = (props) => {
             }
 
             console.log('Connecting to: ', ipAux);
+            notify('Connecting...');
 
             soc = io(ipAux, {
                 'reconnect': false,
