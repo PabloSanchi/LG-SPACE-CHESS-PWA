@@ -946,6 +946,14 @@ function DisplayChess() {
                                 }
                             />
                         }
+
+                        {/* NOTIFY ONGOING SIMULATION */}
+                        <Flex display={gamemode == 1 ? 'flex' : 'none' }  direction='column'
+                        mt={1} alignItems={'center'} justifyContent='center' gap='1'>
+                            <Text fontWeight='semibold' color='orange'>SIMULATION MODE </Text>
+                            <Text color='orange'>{' (Satellite launch to space - Spring 2023)'}</Text>
+                        </Flex>
+
                         {/* DIFFICULTY SELECTOR */}
                         <Flex display={gamemode == 2 ? 'flex' : 'none'} mt={3} align="center" justify='center' direction={'row'} gap={2}>
                             <Button size="md" w={12} colorScheme={difficulty == 1 ? 'orange' : 'gray'} onClick={() => setDifficulty(1)}>Easy</Button>
